@@ -1,7 +1,7 @@
 <script setup>
  import { ref } from 'vue'
  import {NCard,NTabs,NTabPane,NTable,NButton,NSpace} from 'naive-ui' 
- import {getAdminUsers,getAdminProducts,getAdminCategories,getAdminOrders,postAdminCategories,patchAdminProduct,patchAdminOrders,deleteAdminProduct} from '../../composable/admin.js'
+ import {getAdminUsers,getAdminProducts,getAdminCategories,getAdminOrders,postAdminCategories,patchAdminProduct,patchAdminOrders,deleteAdminProduct} from '../../api/admin.js'
 import { useRouter } from 'vue-router';
  const { userData, usersErrorMsg, getUser } =getAdminUsers()
  const { sellingProductsData, unsellingProductsData, productsErrorMsg, getProducts }=getAdminProducts()

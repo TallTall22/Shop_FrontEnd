@@ -1,6 +1,6 @@
 <script setup>
   import { useRoute } from 'vue-router';
-  import {getAdminProduct} from '../../composable/admin'
+  import {getAdminProduct} from '../../api/admin'
   const { product, productErrorMsg, getProduct }=getAdminProduct()
   const router=useRoute()
   const id=router.params.id

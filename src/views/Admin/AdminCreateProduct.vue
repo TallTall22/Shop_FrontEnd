@@ -1,7 +1,7 @@
 <script setup>
  import { ref } from 'vue'
  import { useRouter } from 'vue-router';
- import {getAdminCreateProducts,postAdminProduct} from '../../composable/admin.js'
+ import {getAdminCreateProducts,postAdminProduct} from '../../api/admin.js'
  const { categoriesData, productsErrorMsg, getCategories }=getAdminCreateProducts()
  const { ProductErrorMsg, postProduct }=postAdminProduct()
  const name=ref('')

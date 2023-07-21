@@ -1,7 +1,7 @@
 <script setup>
 import { ref , watchEffect  } from 'vue'
 import { useRoute } from 'vue-router';
-import { getAdminEditProducts,putAdminProduct } from '../../composable/admin';
+import { getAdminEditProducts,putAdminProduct } from '../../api/admin';
 
 const route = useRoute();
 const id = route.params.id;
