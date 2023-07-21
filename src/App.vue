@@ -15,6 +15,7 @@
 <style lang="scss">
   main{
   padding-top: 50px;
+  padding-bottom: 50px;
   background-color:var(--background-color);
   padding-left:var(--site-edge-margin);
   padding-right: var(--site-edge-margin);
