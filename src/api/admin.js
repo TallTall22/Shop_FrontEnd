@@ -6,9 +6,13 @@ const baseUrl='http://localhost:3001/api'
 export const getAdminUsers=()=>{
   const userData=ref([])
   const usersErrorMsg=ref('')
-  const getUser=async()=>{
+  const getUser=async(authToken)=>{
     try{
-      const res=await axios.get(baseUrl+'/admin/users')
+      const res=await axios.get(baseUrl+'/admin/users',{
+        headers:{
+          Authorization:'Bearer '+ authToken
+        }
+      })
     userData.value=res.data.users
     }catch(err){
       usersErrorMsg.value=err
@@ -22,9 +26,13 @@ export const getAdminProducts=()=>{
   const sellingProductsData=ref([])
   const unsellingProductsData=ref([])
   const productsErrorMsg=ref('')
-  const getProducts=async()=>{
+  const getProducts=async(authToken)=>{
     try{
-      const res=await axios.get(baseUrl+'/admin/products')
+      const res=await axios.get(baseUrl+'/admin/products',{
+        headers:{
+          Authorization:'Bearer '+ authToken
+        }
+      })
     sellingProductsData.value=res.data.sellingProducts
     unsellingProductsData.value=res.data.unsellingProducts
     }catch(err){
@@ -38,9 +46,13 @@ export const getAdminProducts=()=>{
 export const getAdminProduct=()=>{
   const product=ref([])
   const productErrorMsg=ref('')
-  const getProduct=async(id)=>{
+  const getProduct=async({id,authToken})=>{
     try{
-      const res=await axios.get(baseUrl+`/admin/products/${id}`)
+      const res=await axios.get(baseUrl+`/admin/products/${id}`,{
+        headers:{
+          Authorization:'Bearer '+ authToken
+        }
+      })
     product.value=res.data.product
     }catch(err){
       productErrorMsg.value=err
@@ -53,9 +65,13 @@ export const getAdminProduct=()=>{
 export const getAdminCreateProducts=()=>{
   const categoriesData=ref([])
   const productsErrorMsg=ref('')
-  const getCategories=async()=>{
+  const getCategories=async(authToken)=>{
     try{
-      const res=await axios.get(baseUrl+'/admin/products/create')
+      const res=await axios.get(baseUrl+'/admin/products/create',{
+        headers:{
+          Authorization:'Bearer '+ authToken
+        }
+      })
     categoriesData.value=res.data.categories
     }catch(err){
       productsErrorMsg.value=err
@@ -67,10 +83,13 @@ export const getAdminCreateProducts=()=>{
 
 export const postAdminProduct=()=>{
   const ProductErrorMsg=ref('')
-  const postProduct=async({name,price,description,quantity,image,categoryId,isSelling})=>{
+  const postProduct=async({name,price,description,quantity,image,categoryId,isSelling,authToken})=>{
     try{
       const res=await axios.post(baseUrl+'/admin/products',{name,price,description,quantity,image,categoryId,isSelling},{
-      headers:{"Content-Type":'multipart/form-data'}
+      headers:{
+        "Content-Type":'multipart/form-data',
+        Authorization:'Bearer '+ authToken
+      }
     })
       return res.data
     }catch(err){
@@ -85,9 +104,13 @@ export const getAdminEditProducts=(id)=>{
   const product=ref([])
   const categories=ref([])
   const productErrorMsg=ref('')
-  const getProduct=async()=>{
+  const getProduct=async(authToken)=>{
     try{
-      const res=await axios.get(baseUrl+`/admin/products/${id}/edit`)
+      const res=await axios.get(baseUrl+`/admin/products/${id}/edit`,{
+        headers:{
+          Authorization:'Bearer '+ authToken
+        }
+      })
     product.value=res.data.product
     categories.value=res.data.categories
     }catch(err){
@@ -100,10 +123,13 @@ export const getAdminEditProducts=(id)=>{
 
 export const putAdminProduct=()=>{
   const putProductErrorMsg=ref('')
-  const putProduct=async({id,name,price,description,quantity,image,categoryId,isSelling})=>{
+  const putProduct=async({id,name,price,description,quantity,image,categoryId,isSelling,authToken})=>{
     try{
       const res=await axios.put(baseUrl+`/admin/products/${id}`,{name,price,description,quantity,image,categoryId,isSelling},{
-      headers:{"Content-Type":'multipart/form-data'}
+      headers:{
+        "Content-Type":'multipart/form-data',
+        Authorization:'Bearer '+ authToken
+      }
     })
       return res.data
     }catch(err){
@@ -116,9 +142,13 @@ export const putAdminProduct=()=>{
 
 export const patchAdminProduct=()=>{
   const patchProductErrorMsg=ref('')
-  const patchProduct=async(id)=>{
+  const patchProduct=async({id,isSelling,authToken})=>{
     try{
-      const res=await axios.patch(baseUrl+`/admin/products/${id}`)
+      const res=await axios.patch(baseUrl+`/admin/products/${id}`,{isSelling},{
+        headers:{
+          Authorization:'Bearer '+ authToken
+        }
+      })
       return res.data
     }catch(err){
       patchProductErrorMsg.value=err
@@ -129,9 +159,14 @@ export const patchAdminProduct=()=>{
 
 export const deleteAdminProduct=()=>{
   const deleteProductErrorMsg=ref('')
-  const deleteProduct=async(id)=>{
+  const deleteProduct=async(payload)=>{
     try{
-      const res=await axios.delete(baseUrl+`/admin/products/${id}`)
+      const {id,authToken}=payload
+      const res=await axios.delete(baseUrl+`/admin/products/${id}`,{
+        headers:{
+          Authorization:'Bearer '+ authToken
+        }
+      })
       return res.data
     }catch(err){
       deleteProductErrorMsg.value=err
@@ -143,9 +178,13 @@ export const deleteAdminProduct=()=>{
 export const getAdminCategories=()=>{
   const categoriesData=ref([])
   const categoriesErrorMsg=ref('')
-  const getCategories=async()=>{
+  const getCategories=async(authToken)=>{
     try{
-      const res=await axios.get(baseUrl+'/admin/categories')
+      const res=await axios.get(baseUrl+'/admin/categories',{
+        headers:{
+          Authorization:'Bearer '+ authToken
+        }
+      })
       categoriesData.value=res.data.categories
     }catch(err){
       categoriesErrorMsg.value=err
@@ -157,9 +196,13 @@ export const getAdminCategories=()=>{
 
 export const postAdminCategories=()=>{
   const postCategoriesErrorMsg=ref('')
-  const postCategories=async(category)=>{
+  const postCategories=async({category,authToken})=>{
     try{
-      const res=await axios.post(baseUrl+'/admin/categories',{name:category})
+      const res=await axios.post(baseUrl+'/admin/categories',{name:category},{
+        headers:{
+          Authorization:'Bearer '+ authToken
+        }
+      })
       return res.data
     }catch(err){
       postCategoriesErrorMsg.value=err
@@ -172,9 +215,13 @@ export const postAdminCategories=()=>{
 export const getAdminOrders=()=>{
   const ordersData=ref([])
   const ordersErrorMsg=ref('')
-  const getOrders=async()=>{
+  const getOrders=async(authToken)=>{
     try{
-      const res=await axios.get(baseUrl+'/admin/orders')
+      const res=await axios.get(baseUrl+'/admin/orders',{
+        headers:{
+          Authorization:'Bearer '+ authToken
+        }
+      })
       ordersData.value=res.data.orders
     }catch(err){
       ordersErrorMsg.value=err
@@ -186,9 +233,13 @@ export const getAdminOrders=()=>{
 
 export const patchAdminOrders=()=>{
   const patchOrderErrorMsg=ref('')
-  const patchOrder=async(id)=>{
+  const patchOrder=async({id,isSent,authToken})=>{
     try{
-      const res=await axios.patch(baseUrl+`/admin/orders/${id}`)
+      const res=await axios.patch(baseUrl+`/admin/orders/${id}`,{isSent},{
+        headers:{
+          Authorization:'Bearer '+ authToken
+        }
+      })
       return res.data
     }catch(err){
       patchOrderErrorMsg.value=err

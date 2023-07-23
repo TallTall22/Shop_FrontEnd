@@ -26,7 +26,7 @@ const router = createRouter({
     },
     {
       path:'/admin/products/:id',
-      name:'product',
+      name:'Adminproduct',
       component:()=>import('../views/Admin/AdminProduct.vue')
     },
     {
@@ -38,7 +38,17 @@ const router = createRouter({
       path:'/register',
       name:'register',
       component:()=>import('../views/RegisterView.vue')
-    }    
+    },
+    {
+      path:'/products/:id',
+      name:'product',
+      component:()=>import('../views/ProductView.vue')
+    },
+    {
+      path:'/cart',
+      name:'cart',
+      component:()=>import('../views/CartView.vue')
+    }
   ]
 })
 

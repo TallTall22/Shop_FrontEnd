@@ -2,9 +2,11 @@
   import { useRoute } from 'vue-router';
   import {getAdminProduct} from '../../api/admin'
   const { product, productErrorMsg, getProduct }=getAdminProduct()
+  const authToken = localStorage.getItem('authToken')
+
   const router=useRoute()
   const id=router.params.id
-  getProduct(id)
+  getProduct({id, authToken })
 </script>
 
 <template>

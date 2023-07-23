@@ -1,36 +1,84 @@
 <script setup>
   import { ref } from 'vue';
-import {getViewsProducts} from '../api/product'
+  import {getViewsProducts} from '../api/product'
+  import { addFavoriteAsync, deleteFavoriteAsync } from '../api/user'
+  import { postCartAsync } from '../api/cart';
   import { RouterLink, useRouter } from 'vue-router';
   const { products,categories, pagination, productsErrorMsg, getProducts } = getViewsProducts()
+  const { addFavoriteErrorMsg, addFavorite }=addFavoriteAsync()
+  const { deleteFavoriteErrorMsg, deleteFavorite }=deleteFavoriteAsync()
+  const { postCartMsg,postCartErrorMsg, postCart }=postCartAsync()
+
   const router=useRouter()
   const categoryId =ref('')
   const page=ref(1) 
+  const showErrorModal = ref(false)
+  const authToken=localStorage.getItem('authToken')
+
   const goProductPage=(id)=>{
     router.push(`/products/${id}`)
   }
 
+  //category
   const handleChangeCategoryId=(id)=>{
     categoryId.value=id
     page.value=1
-    getProducts({ categoryId: categoryId.value, page: page.value })
+    getProducts({ authToken, categoryId: categoryId.value, page: page.value })
   }
 
+  const isActive = (id) => {
+  return categoryId.value === id;
+};
+
+  //favorite
+  const handleAddFavorite=async(productId)=>{
+    if(!authToken) return showErrorModal.value=true
+    const res=await addFavorite({authToken,productId})
+    if(res){
+    getProducts({ authToken, categoryId: categoryId.value, page: page.value })
+    }
+  }
+  
+  const handleDeleteFavorite=async(productId)=>{
+    if(!authToken) return showErrorModal.value=true
+    const res=await deleteFavorite({authToken,productId})
+    if(res){
+    getProducts({ authToken, categoryId: categoryId.value, page: page.value })
+    }
+  }
+  const closeErrorModal = () => {
+  showErrorModal.value = false
+}
+
+  //cart
+  const handleCreateCart=async(productId)=>{
+    if (!authToken) return showErrorModal.value = true
+    const res=await postCart({authToken, productId })
+    if (res) {
+    getProducts({ authToken, categoryId: categoryId.value, page: page.value })
+    }
+  }
+
+  const closeCartErrorModal=()=>{
+    postCartMsg.value=''
+  }
+
+  //pagination
   const handleChangePage = async (pageNumber) => {
     page.value = pageNumber
-    getProducts({ categoryId: categoryId.value, page: page.value })
+    getProducts({ authToken, categoryId: categoryId.value, page: page.value })
     window.scrollTo(0, 0)
   }
 
   const handlePrevPage=async()=>{
     page.value= pagination.prev
-    getProducts({ categoryId: categoryId.value, page: page.value })
+    getProducts({ authToken, categoryId: categoryId.value, page: page.value })
     window.scrollTo(0, 0)
   }
 
   const handleNextPage=async()=>{
     page.value= pagination.next
-    getProducts({ categoryId: categoryId.value, page: page.value })
+    getProducts({ authToken, categoryId: categoryId.value, page: page.value })
     window.scrollTo(0, 0)
   }
 
@@ -38,10 +86,8 @@ import {getViewsProducts} from '../api/product'
   return page.value === pageNumber;
 };
 
-  const isActive = (id) => {
-  return categoryId.value === id;
-};
-  getProducts({ categoryId:categoryId.value, page:page.value})
+  
+  getProducts({authToken, categoryId:categoryId.value, page:page.value})
   
   </script>
 
@@ -65,8 +111,9 @@ import {getViewsProducts} from '../api/product'
       <br>
       <h3>$NT {{ product.price }}</h3>
       <div class="buttonGroup">
-        <button class="btn favorite-btn">收藏</button>
-        <button class="btn cart-btn">加入購物車</button>
+        <button v-if="!product.isFavorited" class="btn favorite-btn" @click="handleAddFavorite(product.id)">收藏</button>
+        <button v-if="product.isFavorited" class="btn unfavorite-btn" @click="handleDeleteFavorite(product.id)">移除收藏</button>
+        <button class="btn cart-btn" @click="handleCreateCart(product.id)">加入購物車</button>
       </div>
     </div>
   </div>
@@ -84,6 +131,23 @@ import {getViewsProducts} from '../api/product'
     </li>
   </ul>
 </div>
+
+  <!--Modal-->
+      <div class="error-modal-container" v-if="showErrorModal">
+        <div class="error-modal">
+          <h2>警示</h2>
+          <p>請先登入!</p>
+          <button @click="closeErrorModal">關閉</button>
+        </div>
+      </div>
+
+      <div class="error-modal-container" v-if="postCartMsg">
+          <div class="error-modal">
+            <h2>提醒</h2>
+            <p>{{ postCartMsg }}</p>
+            <button @click="closeCartErrorModal">關閉</button>
+          </div>
+        </div>
 </template>
 
 <style lang="scss">
@@ -160,6 +224,15 @@ import {getViewsProducts} from '../api/product'
             background-color: #1f4721;
             }
         }
+        .unfavorite-btn{
+          background-color: #ef0101;
+          &:hover {
+            background-color: #ac0303;
+            }
+          &:active {
+            background-color: #890404;
+            }
+        }
         }
       }
     }
@@ -197,6 +270,36 @@ import {getViewsProducts} from '../api/product'
       }
     }
   }
+}
+
+.error-modal-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+.error-modal {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  background-color: #fff;
+  max-width: 400px;
+  padding: 4rem;
+  border-radius: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  h2{
+    margin-bottom: 1rem;
+  }
+  p{
+    margin-bottom: 1rem;
+  }
+}
 }
 
 </style>

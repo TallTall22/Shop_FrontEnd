@@ -16,14 +16,17 @@ export const getViewsProducts=()=>{
   const productsErrorMsg=ref('')
   const getProducts=async(payload)=>{
     try{
-      const {categoryId,page}=payload
+      const {authToken,categoryId,page}=payload
       const res=await axios.get(baseUrl+'/products',{
+          headers:{
+            Authorization:'Bearer '+ authToken
+          },
           params:{
             categoryId:categoryId,
             page:page
           }
       })
-      products.value=res.data.products.rows
+      products.value=res.data.data
       categories.value=res.data.categories
       Object.assign(pagination, res.data.pagination)
     }
@@ -32,4 +35,24 @@ export const getViewsProducts=()=>{
     }
   }
   return {products,categories,pagination,productsErrorMsg,getProducts}
+}
+
+export const getViewsProduct=()=>{
+  const product=ref([])
+  const productErrorMsg=ref('')
+  const getProduct=async(payload)=>{
+    try{
+      const {id,authToken}=payload
+      const res=await axios.get(baseUrl+`/products/${id}`,{
+        headers:{
+          Authorization:'Bearer '+ authToken
+        }
+      })
+      product.value=res.data.product
+    }
+    catch(err){
+      productErrorMsg.value=err
+    }
+  }
+  return {product,productErrorMsg,getProduct}
 }

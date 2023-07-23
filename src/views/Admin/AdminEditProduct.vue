@@ -7,7 +7,8 @@ const route = useRoute();
 const id = route.params.id;
 const { product, categories, productErrorMsg, getProduct }=getAdminEditProducts(id)
 const { putProductErrorMsg, putProduct }=putAdminProduct()
-getProduct()
+const authToken = localStorage.getItem('authToken')
+
 const name = ref('');
 const price = ref('');
 const description = ref('');
@@ -19,7 +20,7 @@ const isSelling = ref('');
 const handleProduct = async (e) => {
   e.preventDefault()
   if (name.value.trim() !== '') {
-    const result = await putProduct({id:id , name: name.value, price: price.value, description: description.value, quantity: quantity.value, image: image.value, categoryId: categoryId.value, isSelling: isSelling.value });
+    const result = await putProduct({id:id , name: name.value, price: price.value, description: description.value, quantity: quantity.value, image: image.value, categoryId: categoryId.value, isSelling: isSelling.value, authToken });
     if (result) {
       name.value = '';
       price.value = '';
@@ -32,6 +33,7 @@ const handleProduct = async (e) => {
     }
   }
 }
+getProduct(authToken)
 
 watchEffect(() => {
   if (product.value) {

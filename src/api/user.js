@@ -32,3 +32,39 @@ export const  registerAsync=()=>{
 
   return {registerErrorMsg,register}
 }
+
+export const addFavoriteAsync=()=>{
+  const addFavoriteErrorMsg=ref('')
+  const addFavorite=async(payload)=>{
+    try{
+      const {authToken,productId}=payload
+      const res=await axios.post(baseUrl+'/users/favorites',{productId},{
+        headers:{
+          Authorization:'Bearer '+ authToken
+        }
+      })
+      return res.data
+    }catch(err){
+      addFavoriteErrorMsg.value=err
+    }
+  }
+  return {addFavoriteErrorMsg,addFavorite}
+}
+
+export const deleteFavoriteAsync=()=>{
+  const deleteFavoriteErrorMsg=ref('')
+  const deleteFavorite=async(payload)=>{
+    try{
+      const {authToken,productId}=payload
+      const res=await axios.delete(baseUrl+`/users/favorites/${productId}`,{
+        headers:{
+          Authorization:'Bearer '+ authToken
+        }
+      })
+      return res.data
+    }catch(err){
+      deleteFavoriteErrorMsg.value=err
+    }
+  }
+  return {deleteFavoriteErrorMsg,deleteFavorite}
+}

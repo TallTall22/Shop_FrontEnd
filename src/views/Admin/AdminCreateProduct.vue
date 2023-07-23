@@ -4,6 +4,7 @@
  import {getAdminCreateProducts,postAdminProduct} from '../../api/admin.js'
  const { categoriesData, productsErrorMsg, getCategories }=getAdminCreateProducts()
  const { ProductErrorMsg, postProduct }=postAdminProduct()
+ const authToken=localStorage.getItem('authToken')
  const name=ref('')
  const price=ref('')
  const description=ref('')
@@ -24,7 +25,7 @@
 const handleProduct = async (e) => {
     e.preventDefault()
   if (name.value.trim() !== '') {
-    const result = await postProduct({name:name.value, price:price.value, description:description.value, quantity:quantity.value,image:image.value, categoryId:categoryId.value, isSelling:isSelling.value});
+    const result = await postProduct({name:name.value, price:price.value, description:description.value, quantity:quantity.value,image:image.value, categoryId:categoryId.value, isSelling:isSelling.value, authToken });
     if (result) {
       name.value = '';
       price.value = '';
@@ -37,7 +38,7 @@ const handleProduct = async (e) => {
     }
   }
 }
- getCategories()
+ getCategories(authToken)
 
 
 </script>

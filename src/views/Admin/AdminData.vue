@@ -2,7 +2,8 @@
  import { ref } from 'vue'
  import {NCard,NTabs,NTabPane,NTable,NButton,NSpace} from 'naive-ui' 
  import {getAdminUsers,getAdminProducts,getAdminCategories,getAdminOrders,postAdminCategories,patchAdminProduct,patchAdminOrders,deleteAdminProduct} from '../../api/admin.js'
-import { useRouter } from 'vue-router';
+ import { useRouter } from 'vue-router';
+
  const { userData, usersErrorMsg, getUser } =getAdminUsers()
  const { sellingProductsData, unsellingProductsData, productsErrorMsg, getProducts }=getAdminProducts()
  const { categoriesData, categoriesErrorMsg, getCategories }=getAdminCategories()
@@ -11,6 +12,8 @@ import { useRouter } from 'vue-router';
  const { patchProductErrorMsg, patchProduct }=patchAdminProduct()
  const { patchOrderErrorMsg, patchOrder }=patchAdminOrders()
  const { deleteProductErrorMsg, deleteProduct}=deleteAdminProduct()
+ const authToken = localStorage.getItem('authToken')
+
  const router=useRouter()
  const newCategory=ref('')
 
@@ -19,24 +22,24 @@ import { useRouter } from 'vue-router';
     const result = await postCategories(newCategory.value);
     if (result) {
       newCategory.value = '';
-      getCategories()
+      getCategories(authToken)
     }
   }
  }
 
  const handlePatchProduct=async(id)=>{
-  await patchProduct(id)
-  getProducts()
+  await patchProduct({id,authToken})
+  getProducts(authToken)
  }
 
   const handleDeleteProduct=async(id)=>{
-  await deleteProduct(id)
-  getProducts()
+  await deleteProduct({id,authToken})
+  getProducts(authToken)
  }
 
   const handlePatchOrder=async(id)=>{
-  await patchOrder(id)
-  getOrders()
+  await patchOrder({id,authToken,isSent:true})
+  getOrders(authToken)
 
  }
 
@@ -51,10 +54,10 @@ import { useRouter } from 'vue-router';
 const goProductPage = (id) => {
   router.push(`/admin/products/${id}`)
 }
- getUser()
- getProducts()
- getCategories()
- getOrders()
+ getUser(authToken)
+ getProducts(authToken)
+ getCategories(authToken)
+ getOrders(authToken)
 </script>
 <template>
   <n-card>
