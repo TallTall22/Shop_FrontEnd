@@ -11,6 +11,10 @@
 
   const router=useRouter()
   const categoryId =ref('')
+  const keyword=ref('')
+  const sort=ref('')
+  const minPrice=ref(0)
+  const maxPrice=ref(1000)
   const page=ref(1) 
   const showErrorModal = ref(false)
   const authToken=localStorage.getItem('authToken')
@@ -92,8 +96,24 @@
   </script>
 
 <template>
-  <div class="listWrapper">
-    <ul>
+  <div class="classify-container">
+    <div class="">
+      <input v-model="keyword" type="text" name="keyword">
+      <button>搜尋</button>
+      <label for="sort">排序</label>
+      <select v-model="sort" name="sort" id="">
+        <option value="id">商品編號</option>
+        <option value="price">價格</option>
+        <option value="cateogryId">種類</option>
+      </select>
+      <label for="minPrice">最小金額</label>
+      <input v-model="minPrice" type="number" name="minPrice" step="10" min="0" :max="maxPrice">
+      <label for="maxPrice">最大金額</label>
+      <input v-model="maxPrice" type="number" name="maxPrice" step="10" :min="minPrice">
+      <button>搜尋</button>
+    </div>  
+    <div class="">
+      <ul>
       <li>
         <RouterLink :to="{ path: '/', query: { categoryId:''} }" @click="handleChangeCategoryId('')">全部</RouterLink>
       </li>
@@ -101,16 +121,17 @@
         <RouterLink :class="{active: isActive(category.id) }" :to="{ path: '/', query: { categoryId:category.id } }" @click="handleChangeCategoryId(category.id)">{{ category.name }}</RouterLink>
       </li>
     </ul>
+    </div>
   </div>
-<div class="cardWrapper">
+<div class="card-wrapper">
     <div v-for="product in products" :key="product.id" class="card">
      <img  :src="product.image" alt="" @click="goProductPage(product.id)">
-    <div class="cardBody">
+    <div class="card-body">
       <h2>{{ product.name }}</h2>
       <p>{{ product.Category.name }}</p>
       <br>
       <h3>$NT {{ product.price }}</h3>
-      <div class="buttonGroup">
+      <div class="button-group">
         <button v-if="!product.isFavorited" class="btn favorite-btn" @click="handleAddFavorite(product.id)">收藏</button>
         <button v-if="product.isFavorited" class="btn unfavorite-btn" @click="handleDeleteFavorite(product.id)">移除收藏</button>
         <button class="btn cart-btn" @click="handleCreateCart(product.id)">加入購物車</button>
@@ -151,7 +172,7 @@
 </template>
 
 <style lang="scss">
-  .listWrapper{
+  .classify-container{
     margin-bottom: 2rem;
     ul{
       display: flex;
@@ -173,7 +194,7 @@
     }
   }
 
-  .cardWrapper{
+  .card-wrapper{
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
@@ -187,12 +208,12 @@
       img{
         cursor: pointer;
       }
-      .cardBody{
+      .card-body{
         padding: 2rem;
         h2{
           margin-bottom: 0.2rem;
         }
-        .buttonGroup{
+        .button-group{
           margin-top: 2rem;
           display: flex;
           justify-content: space-around;

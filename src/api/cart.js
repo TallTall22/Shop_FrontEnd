@@ -25,8 +25,9 @@ export const postCartAsync=()=>{
 
 export const getCartAsync=()=>{
   const getCartErrorMsg=ref('')
+  const order=ref('')
   const carts=ref('')
-  const amount=ref('')
+  const amountData=ref('')
   const cartMsg=ref('')
   const getCart=async(payload)=>{
     try{
@@ -36,14 +37,72 @@ export const getCartAsync=()=>{
           Authorization:'Bearer '+ authToken
         }
       })
+      order.value=res.data.order
       carts.value=res.data.carts
       cartMsg.value=res.data.message
-      amount.value=res.data.amount
+      amountData.value=res.data.amount
     }catch(err){
       getCartErrorMsg.value=err
     }
   }
 
-  return {carts,cartMsg,amount,getCartErrorMsg,getCart}
+  return {order,carts,cartMsg,amountData,getCartErrorMsg,getCart}
 }
 
+export const patchCartAsync=()=>{
+  const patchCartErrorMsg=ref('')
+  const patchCartMsg=ref('')
+  const patchCart=async(payload)=>{
+    try{
+      const {authToken,productId,cartId,quantity}=payload
+      const res=await axios.patch(baseUrl+`/carts/${cartId}`,{productId,quantity},{
+        headers:{
+          Authorization:'Bearer '+ authToken
+        }
+      })
+      patchCartMsg.value=res.data.message
+    }catch(err){
+      patchCartErrorMsg.value=err
+    }
+  }
+
+  return {patchCartMsg,patchCartErrorMsg,patchCart}
+}
+
+export const deleteCartAsync=()=>{
+  const deleteCartErrorMsg=ref('')
+  const deleteCart=async(payload)=>{
+    try{
+      const {authToken,cartId}=payload
+      const res=await axios.delete(baseUrl+`/carts/${cartId}`,{
+        headers:{
+          Authorization:'Bearer '+ authToken
+        }
+      })
+      return res.data
+    }catch(err){
+      deleteCartErrorMsg.value=err
+    }
+  }
+
+  return {deleteCartErrorMsg,deleteCart}
+}
+
+export const putOrderAsync=()=>{
+  const putOrderErrorMsg=ref('')
+  const putOrder=async(payload)=>{
+    try{
+      const {authToken,orderId,amount,paidMethod,phone,address}=payload
+      const res=await axios.put(baseUrl+`/carts/${orderId}`,{amount,paidMethod,phone,address},{
+        headers:{
+          Authorization:'Bearer '+ authToken
+        }
+      })
+      return res.data
+    }catch(err){
+      putOrderErrorMsg.value=err
+    }
+  }
+
+  return {putOrderErrorMsg,putOrder}
+}

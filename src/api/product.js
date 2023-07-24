@@ -16,13 +16,17 @@ export const getViewsProducts=()=>{
   const productsErrorMsg=ref('')
   const getProducts=async(payload)=>{
     try{
-      const {authToken,categoryId,page}=payload
+      const {authToken,categoryId,page,order,keyword,minPrice,maxPrice}=payload
       const res=await axios.get(baseUrl+'/products',{
           headers:{
             Authorization:'Bearer '+ authToken
           },
           params:{
             categoryId:categoryId,
+            order,
+            keyword,
+            minPrice,
+            maxPrice,
             page:page
           }
       })
