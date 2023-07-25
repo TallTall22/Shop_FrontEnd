@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
 
 const baseUrl='http://localhost:3001/api'
 
@@ -106,4 +106,25 @@ export const getFavoriteAsync=()=>{
     }
   }
   return {favorites,favoriteMsg,getFavoriteErrorMsg,getFavorite}
+}
+
+export const getUserOrderAsync=()=>{
+  const getUserOrderErrorMsg=ref('')
+  const userOrders=ref('')
+  const getUserOrderMsg=ref('')
+  const getUserOrder=async(payload)=>{
+    try{
+      const {authToken}=payload
+      const res=await axios.get(baseUrl+'/users/orders',{
+        headers:{
+          Authorization:'Bearer '+ authToken
+        }
+      })
+      userOrders.value=res.data.orders
+      getUserOrderMsg.value=res.data.message
+    }catch(err){
+      getUserOrderErrorMsg.value=err
+    }
+  }
+  return {userOrders,getUserOrderMsg,getUserOrderErrorMsg,getUserOrder}
 }

@@ -28,9 +28,13 @@
   
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
   .productWrapper{
     display: flex;
+    img{
+      width: 400px;
+      height: 300px;
+    }
     .info{
       margin-left: 2rem;
       h2{

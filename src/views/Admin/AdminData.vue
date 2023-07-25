@@ -202,11 +202,11 @@ const goProductPage = (id) => {
             <td v-if="!order.isPaid">未付款</td>
             <td v-if="!order.isCheck">訂單未成立</td>
             <td v-if="order.isCheck&&!order.isSent">未寄出</td>
-            <td v-if="order.isCheck &&order.isPaid && order.isSent">已寄出</td>
+            <td v-if="order.isCheck && order.isSent">已寄出</td>
             <td v-if="order.isCheck && !order.isSent">
               <n-button color="#ff69b4" @click="handlePatchOrder(order.id)">寄出</n-button>
             </td>
-            <td v-if="order.isCheck && order.isPaid && order.isSent">
+            <td v-if="order.isCheck && order.isSent">
               <n-button ghost color="#ff69b4" disabled>已寄出</n-button>
             </td>
            </tr>       

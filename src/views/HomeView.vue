@@ -197,7 +197,7 @@
         </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
   .classify-container{
     margin-bottom: 2rem;
     .search-container{
@@ -269,12 +269,17 @@
       overflow: hidden;
       margin-bottom: 2rem;
       img{
+        width: 400px;
+        height: 300px;
         cursor: pointer;
       }
       .card-body{
         padding: 2rem;
         h2{
           margin-bottom: 0.2rem;
+        }
+        h3{
+          height: 2rem;
         }
         .button-group{
           margin-top: 2rem;

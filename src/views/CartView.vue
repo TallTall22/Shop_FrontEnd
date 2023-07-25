@@ -44,7 +44,7 @@ const handleDeleteCart=async({cartId})=>{
 
 //step
 const handleForSecondStep=()=>{
-  amount.value=amountData
+  amount.value=amountData.value
   step.value+=1
 }
 
@@ -61,12 +61,11 @@ const handleMinusStep = () => {
 const handleCheckOrder=async({orderId})=>{
   if(!paidMethod.value||!amount.value||!name.value||!address.value||!phone.value||!email.value) return showErrorModal.value=true
   if(paidMethod.value==='信用卡'&&!cardNumber1.value|| paidMethod.value === '信用卡' && !cardNumber2.value|| paidMethod.value === '信用卡' && !cardNumber3.value|| paidMethod.value === '信用卡' && !validDate.value|| paidMethod.value === '信用卡' && !cvc.value)return showErrorModal.value=true
-  const res=await putOrder({authToken,orderId,paidMethod:paidMethod.value,phone:phone.value,address:address.value,name:name.value})
+  const res=await putOrder({authToken:authToken,orderId,paidMethod:paidMethod.value,amount:Number(amount.value),phone:phone.value,address:address.value,name:name.value})
   if(res){
     router.push('/')
   }
 }
-
 //Modal
 const closeErrorModal=()=>{
   showErrorModal.value=false
@@ -143,6 +142,8 @@ getCart({ authToken })
             貨到付款
           </label>
         </div>
+
+
         <div class="part" dataphase="paidInfo" :step="step">
           <div v-if="paidMethod==='信用卡'" class="credit-Card">
             <div class="input-group-row">

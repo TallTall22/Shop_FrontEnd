@@ -15,7 +15,7 @@ getUser(authToken)
     <nav class="nav">
         <ul class="navList" >
           <li class="navItem">     
-            <RouterLink to="/hot" class="navLink">人氣商品</RouterLink>
+            <RouterLink to="/popular" class="navLink">人氣商品</RouterLink>
           </li>
           <li class="navItem" >    
             <RouterLink to="/favorite" class="navLink">收藏</RouterLink>
@@ -28,9 +28,12 @@ getUser(authToken)
         <li v-if="userData.isAdmin" class="navItem">     
             <RouterLink to="/admin" class="navLink">後台</RouterLink>
         </li>
-        <li class="navItem">     
+        <li v-if="!userData.isAdmin" class="navItem">     
           <RouterLink to="/cart" class="navLink">購物車</RouterLink>
         </li>
+        <li v-if="!userData.isAdmin" class="navItem">     
+            <RouterLink to="/order" class="navLink">購買紀錄</RouterLink>
+          </li>
         <li v-if="!authToken" class="navItem" >    
           <RouterLink to="/login" class="navLink">登入</RouterLink>
         </li>

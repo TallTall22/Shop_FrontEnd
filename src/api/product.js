@@ -62,3 +62,48 @@ export const getViewsProduct=()=>{
   }
   return {product,isFavorited,productErrorMsg,getProduct}
 }
+
+export const getPopularProductAsync=()=>{
+  const popularProducts=ref([])
+  const getPopularProductErrorMsg=ref('')
+  const getPopularProduct=async()=>{
+    try{
+      const res=await axios.get(baseUrl+'/products/populars')
+      popularProducts.value=res.data.products
+    }
+    catch(err){
+      getPopularProductErrorMsg.value=err
+    }
+  }
+  return {popularProducts,getPopularProductErrorMsg,getPopularProduct}
+}
+
+export const getManPopularProductAsync=()=>{
+  const ManPopularProducts=ref([])
+  const getManPopularProductErrorMsg=ref('')
+  const getManPopularProduct=async()=>{
+    try{
+      const res=await axios.get(baseUrl+'/products/populars/man')
+      ManPopularProducts.value=res.data.products
+    }
+    catch(err){
+      getManPopularProductErrorMsg.value=err
+    }
+  }
+  return {ManPopularProducts,getManPopularProductErrorMsg,getManPopularProduct}
+}
+
+export const getWomanPopularProductAsync=()=>{
+  const womanPopularProducts=ref([])
+  const getWomanPopularProductErrorMsg=ref('')
+  const getWomanPopularProduct=async()=>{
+    try{
+      const res=await axios.get(baseUrl+'/products/populars/woman')
+      womanPopularProducts.value=res.data.products
+    }
+    catch(err){
+      getWomanPopularProductErrorMsg.value=err
+    }
+  }
+  return {womanPopularProducts,getWomanPopularProductErrorMsg,getWomanPopularProduct}
+}

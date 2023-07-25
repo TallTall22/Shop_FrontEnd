@@ -92,8 +92,8 @@ export const putOrderAsync=()=>{
   const putOrderErrorMsg=ref('')
   const putOrder=async(payload)=>{
     try{
-      const {authToken,orderId,amount,paidMethod,phone,address}=payload
-      const res=await axios.put(baseUrl+`/carts/${orderId}`,{amount,paidMethod,phone,address},{
+      const {authToken,orderId,amount,paidMethod,phone,address,name}=payload
+      const res=await axios.put(baseUrl+`/carts/${orderId}`,{amount,paidMethod,phone,address,name},{
         headers:{
           Authorization:'Bearer '+ authToken
         }

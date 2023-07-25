@@ -61,6 +61,65 @@ getFavorite({authToken})
             </div>
           </div>
 </template>
-<style lang="scss">
+<style lang="scss" scoped>
+  .card-wrapper{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    margin-bottom: 1rem;
+    .card{
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      margin-bottom: 2rem;
+      img{
+        width: 400px;
+        height: 300px;
+        cursor: pointer;
+      }
+      .card-body{
+        padding: 2rem;
+        h2{
+          margin-bottom: 0.2rem;
+        }
+        h3{
+          height: 2rem;
+        }
+        .button-group{
+          margin-top: 2rem;
+          display: flex;
+          justify-content: space-around;
+          .btn {
+              display: inline-block;
+              padding: 10px 20px;
+              font-size: 16px;
+              color: #fff;
+              border: none;
+              border-radius: 4px;
+              cursor: pointer;
+             } 
+            .cart-btn{
+              background-color: #007bff;
+              &:hover {
+            background-color: #0056b3;
+          }
 
+          &:active {
+            background-color: #003d80;
+          }
+        }
+        .unfavorite-btn{
+          background-color: #ef0101;
+          &:hover {
+            background-color: #ac0303;
+            }
+          &:active {
+            background-color: #890404;
+            }
+        }
+        }
+      }
+    }
+  }
 </style>

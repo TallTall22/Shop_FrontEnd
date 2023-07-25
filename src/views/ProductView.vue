@@ -106,10 +106,15 @@ getProduct({id, authToken })
 
 
 </template>
-<style lang="scss">
+<style lang="scss" scoped>
 .product-container{
     display: flex;
     width: 100%;
+    img{
+        width: 400px;
+        height: 300px;
+        cursor: pointer;
+      }
     .info{
       margin-left: 2rem;
       width: 100%;
