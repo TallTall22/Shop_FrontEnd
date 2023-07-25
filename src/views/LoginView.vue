@@ -17,7 +17,7 @@
       localStorage.setItem('authToken',token)
       account.value=''
       password.value=''
-      router.push('/')
+      window.location.href='/'
     }
     }catch{
       showErrorModal.value=true

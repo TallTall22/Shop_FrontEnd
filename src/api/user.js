@@ -33,6 +33,24 @@ export const  registerAsync=()=>{
   return {registerErrorMsg,register}
 }
 
+export const getUserAsync=()=>{
+  const userData=ref('')
+  const getUserErrorMsg=ref('')
+  const getUser=async(authToken)=>{
+    try{
+      const res=await axios.get(baseUrl+'/users/',{
+        headers:{
+          Authorization:'Bearer '+ authToken
+        }
+      })
+      userData.value=res.data.user
+    }catch(err){
+      getUserErrorMsg.value=err
+    }
+  }
+  return {userData,getUserErrorMsg,getUser}
+}
+
 export const addFavoriteAsync=()=>{
   const addFavoriteErrorMsg=ref('')
   const addFavorite=async(payload)=>{
@@ -67,4 +85,25 @@ export const deleteFavoriteAsync=()=>{
     }
   }
   return {deleteFavoriteErrorMsg,deleteFavorite}
+}
+
+export const getFavoriteAsync=()=>{
+  const getFavoriteErrorMsg=ref('')
+  const favorites=ref('')
+  const favoriteMsg=ref('')
+  const getFavorite=async(payload)=>{
+    try{
+      const {authToken}=payload
+      const res=await axios.get(baseUrl+'/users/favorites',{
+        headers:{
+          Authorization:'Bearer '+ authToken
+        }
+      })
+      favorites.value=res.data.FavoritedProduct
+      favoriteMsg.value=res.data.message
+    }catch(err){
+      getFavoriteErrorMsg.value=err
+    }
+  }
+  return {favorites,favoriteMsg,getFavoriteErrorMsg,getFavorite}
 }

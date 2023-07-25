@@ -48,6 +48,11 @@ const router = createRouter({
       path:'/cart',
       name:'cart',
       component:()=>import('../views/CartView.vue')
+    },
+    {
+      path:'/favorite',
+      name:'favorite',
+      component:()=>import('../views/FavoriteView.vue')
     }
   ]
 })

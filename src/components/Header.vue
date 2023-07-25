@@ -1,5 +1,14 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
+import { getUserAsync } from '../api/user';
+const { userData, getUserErrorMsg, getUser }=getUserAsync()
+const authToken=localStorage.getItem('authToken')
+
+const handleLogout=()=>{
+  localStorage.removeItem('authToken')
+}
+
+getUser(authToken)
 </script>
 <template>
   <header>
@@ -16,14 +25,17 @@ import { RouterLink, RouterView } from 'vue-router'
     <RouterLink to="/" class="navbarBrand">SHO</RouterLink>
     <nav class="nav">
       <ul class="navList" >
-        <li class="navItem">     
+        <li v-if="userData.isAdmin" class="navItem">     
             <RouterLink to="/admin" class="navLink">後台</RouterLink>
         </li>
         <li class="navItem">     
           <RouterLink to="/cart" class="navLink">購物車</RouterLink>
         </li>
-        <li class="navItem" >    
+        <li v-if="!authToken" class="navItem" >    
           <RouterLink to="/login" class="navLink">登入</RouterLink>
+        </li>
+        <li v-if="authToken" class="navItem" >    
+          <a href="/" class="navLink" @click="handleLogout">登出</a>
         </li>
       </ul>
     </nav>

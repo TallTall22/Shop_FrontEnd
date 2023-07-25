@@ -2,11 +2,50 @@
 import {ref} from 'vue'
 import { useRoute } from 'vue-router';
 import { getViewsProduct } from '../api/product';
-const { product, productErrorMsg, getProduct }=getViewsProduct()
+import { addFavoriteAsync, deleteFavoriteAsync } from '../api/user'
+import { postCartAsync } from '../api/cart';
+const { product, isFavorited, productErrorMsg, getProduct }=getViewsProduct()
+const { addFavoriteErrorMsg, addFavorite } = addFavoriteAsync()
+const { deleteFavoriteErrorMsg, deleteFavorite } = deleteFavoriteAsync()
+const { postCartMsg, postCartErrorMsg, postCart } = postCartAsync()
+
+const showErrorModal=ref(false)
+const showQuantityModal=ref(false)
 const router = useRoute()
 const id = router.params.id
-const showQuantityModal=ref(false)
 const authToken=localStorage.getItem('authToken')
+
+const handleAddFavorite = async (productId) => {
+  if (!authToken) return showErrorModal.value = true
+  const res = await addFavorite({ authToken, productId })
+  if (res) {
+    getProduct({ id, authToken })
+  }
+}
+
+const handleDeleteFavorite = async (productId) => {
+  if (!authToken) return showErrorModal.value = true
+  const res = await deleteFavorite({ authToken, productId })
+  if (res) {
+    getProduct({ id, authToken })
+  }
+}
+
+const handleCreateCart = async (productId) => {
+  if (!authToken) return showErrorModal.value = true
+  const res = await postCart({ authToken, productId })
+  if (res) {
+    getProduct({ id, authToken })
+  }
+}
+
+const closeCartErrorModal = () => {
+  postCartMsg.value = ''
+}
+
+const closeErrorModal = () => {
+  showErrorModal.value = false
+}
 
 const openQuantiyModal =()=>{
   showQuantityModal.value=true
@@ -32,9 +71,10 @@ getProduct({id, authToken })
         <li>商品介紹 : {{ product.description }}</li>
       </ul>
       <div class="button-group">
-          <button class="btn favorite-btn">收藏</button>
+          <button v-if="!isFavorited" class="btn favorite-btn" @click="handleAddFavorite(product.id)">收藏</button>
+          <button v-if="isFavorited" class="btn unfavorite-btn" @click="handleDeleteFavorite(product.id)">移除收藏</button>
           <button class="btn quantity-btn" @click="openQuantiyModal">查看庫存</button>
-          <button class="btn cart-btn">加入購物車</button>
+          <button class="btn cart-btn" @click="handleCreateCart(product.id)">加入購物車</button>
         </div>
     </div>
     </div>
@@ -47,6 +87,24 @@ getProduct({id, authToken })
         <button @click="closeQuantiyModal">關閉</button>
       </div>
     </div>
+
+        <div class="error-modal-container" v-if="showErrorModal">
+          <div class="error-modal">
+            <h2>警示</h2>
+            <p>請先登入!</p>
+            <button @click="closeErrorModal">關閉</button>
+          </div>
+        </div>
+
+        <div class="error-modal-container" v-if="postCartMsg">
+            <div class="error-modal">
+              <h2>提醒</h2>
+              <p>{{ postCartMsg }}</p>
+              <button @click="closeCartErrorModal">關閉</button>
+            </div>
+          </div>
+
+
 </template>
 <style lang="scss">
 .product-container{
@@ -112,6 +170,15 @@ getProduct({id, authToken })
             }
           &:active {
             background-color: #1f4721;
+            }
+        }
+        .unfavorite-btn{
+          background-color: #ef0101;
+          &:hover {
+            background-color: #ac0303;
+            }
+          &:active {
+            background-color: #890404;
             }
         }
         }

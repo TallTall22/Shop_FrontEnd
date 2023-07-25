@@ -43,6 +43,7 @@ export const getViewsProducts=()=>{
 
 export const getViewsProduct=()=>{
   const product=ref([])
+  const isFavorited=ref(false)
   const productErrorMsg=ref('')
   const getProduct=async(payload)=>{
     try{
@@ -53,10 +54,11 @@ export const getViewsProduct=()=>{
         }
       })
       product.value=res.data.product
+      isFavorited.value=res.data.isFavorited
     }
     catch(err){
       productErrorMsg.value=err
     }
   }
-  return {product,productErrorMsg,getProduct}
+  return {product,isFavorited,productErrorMsg,getProduct}
 }

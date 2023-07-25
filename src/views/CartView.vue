@@ -23,6 +23,9 @@ const router=useRouter()
 const showErrorModal=ref(false)
 const authToken=localStorage.getItem('authToken')
 
+if (!authToken) {
+  router.push('/login')
+}
 //quntity
 const handlePluseQuantity=async({ productId, cartId, quantity })=>{
 

@@ -186,6 +186,8 @@ const goProductPage = (id) => {
               <th>訂單編號</th>
               <th>客戶</th>
               <th>總額</th>
+              <th>付款方式</th>
+              <th>是否付款</th>
               <th>狀態</th>
               <th></th>
             </tr>
@@ -195,11 +197,13 @@ const goProductPage = (id) => {
             <td>{{ order.id }}</td>
             <td>{{ order.User.name }}</td>
             <td>{{ order.amount }}</td>
+            <td>{{ order.paidMethod }}</td>
+            <td v-if="order.isPaid">已付款</td>
+            <td v-if="!order.isPaid">未付款</td>
             <td v-if="!order.isCheck">訂單未成立</td>
-            <td v-if="order.isCheck&&!order.isPaid">未付款</td>
-            <td v-if="order.isCheck&&order.isPaid&&!order.isSent">未寄出</td>
+            <td v-if="order.isCheck&&!order.isSent">未寄出</td>
             <td v-if="order.isCheck &&order.isPaid && order.isSent">已寄出</td>
-            <td v-if="order.isCheck && order.isPaid && !order.isSent">
+            <td v-if="order.isCheck && !order.isSent">
               <n-button color="#ff69b4" @click="handlePatchOrder(order.id)">寄出</n-button>
             </td>
             <td v-if="order.isCheck && order.isPaid && order.isSent">
