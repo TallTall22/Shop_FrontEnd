@@ -150,6 +150,7 @@
     </div>
   </div>
 <div class="card-wrapper">
+    <h2 v-if="!products[0]">沒有商品符合您的搜尋結果</h2>
     <div v-for="product in products" :key="product.id" class="card">
      <img  :src="product.image" alt="" @click="goProductPage(product.id)">
     <div class="card-body">
@@ -168,13 +169,13 @@
 <div class="pagination">
   <ul>
     <li>
-      <RouterLink :to="{ path: '/', query: { page:pagination.prev } }" @click="handlePrevPage">上一頁</RouterLink>
+      <RouterLink v-if="products[0]" :to="{ path: '/', query: { page:pagination.prev } }" @click="handlePrevPage">上一頁</RouterLink>
     </li>
     <li v-for="page in pagination.pages" >
       <RouterLink :class="{active: isCurrnetPage(page)}" :to="{ path: '/', query: { page: page } }" @click="handleChangePage(page)">{{ page }}</RouterLink>
     </li>
     <li>
-      <RouterLink :to="{ path: '/', query: { page: pagination.next } }" @click="handleNextPage">下一頁</RouterLink>
+      <RouterLink v-if="products[0]" :to="{ path: '/', query: { page: pagination.next } }" @click="handleNextPage">下一頁</RouterLink>
     </li>
   </ul>
 </div>
@@ -231,6 +232,7 @@
           font-size: 1rem;
         }
         input{
+          width: 30%;
           height: 1.5rem;
           margin-right: 5px;
           margin: 0 5px;

@@ -63,6 +63,11 @@ const router = createRouter({
       path:'/popular',
       name:'popular',
       component:()=>import('../views/PopularView.vue')
+    },
+    {
+      path:'/:domain(.*)*',
+      name:"error",
+      component:()=>import('../views/ErrorView.vue')
     }
   ]
 })

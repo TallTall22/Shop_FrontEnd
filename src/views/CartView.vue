@@ -211,15 +211,15 @@ getCart({ authToken })
     <div class="progress-button">
       <div class="button-group" dataphase="product" :step="step">
         <button disabled>上一頁</button>
-        <button @click="handleForSecondStep">下一頁</button>
+        <button class="next" @click="handleForSecondStep">下一頁</button>
       </div>
       <div class="button-group" dataphase="paidMethod" :step="step">
         <button @click="handleMinusStep">上一頁</button>
-        <button @click="handleForThirdStep">下一頁</button>
+        <button class="next" @click="handleForThirdStep">下一頁</button>
       </div>
       <div class="button-group" dataphase="paidInfo" :step="step">
         <button @click="handleMinusStep">上一頁</button>
-        <button @click="handleCheckOrder({orderId:order.id})">完成訂單</button>
+        <button class="next" @click="handleCheckOrder({orderId:order.id})">完成訂單</button>
       </div>
     </div>
   </div>
@@ -385,6 +385,18 @@ getCart({ authToken })
         button{
           padding: 10px 20px;
         }
+        .next{
+            border:  none;
+              color: #fff;
+              background-color: #007bff;
+              &:hover {
+            background-color: #0056b3;
+          }
+
+          &:active {
+            background-color: #003d80;
+          }
+      }
       }
     }
   }
