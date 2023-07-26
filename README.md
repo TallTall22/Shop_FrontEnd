@@ -8,55 +8,53 @@
 
 # Readme 大綱
 - [簡介](#簡介)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installing](#installing)
-  - [Run Server](#run-server)
-- [Seed Users](#seed-users)
-- [Tech Stack](#tech-stack)
-- [Demo](#demo)
+- [專案初始化](#專案初始化)
+  - [前置作業](#前置作業)
+  - [安裝](#安裝)
+  - [啟動專案](#啟動專案)
+- [預設使用者](#預設使用者)
+- [開發工具](#開發工具)
 
 <br>
 <br>
 
 # 簡介
-A few things you can do on Exhibition :
-- Browse Exhibition, video and collections
-- Buy tickets for the Exhibtions
-- Use tickets for the Exhibtions 
-
-
+- 可在網站上瀏覽全部商品資料
+- 將商品加入購物車並購買，查看交易紀錄
+- 收藏商品、查看銷售排行
+- 店家能在後台管理商品、訂單狀態 
 
 <br>
 <br>
 
-# Getting Started
-## **Prerequisites**
-Make sure you already have `Node.js` and `npm` installed
+# 專案初始化
+## **前置作業**
+已安裝 node 和 npm
 
 <br>
 
-## **Installing**
-1. Clone the project and go to the project directory
+## **安裝**
+1. Clone 專案
 ```
- git clone https://github.com/TallTall22/Exhibition_back_end
+ git clone https://github.com/TallTall22/Shop_FrontEnd
 
- cd exhibition-back-end
+ cd Shop_FrontEnd
 ```
 
 <br/>
 
-2. Install dependencies
+2. 安裝套件
 ```
 npm install
 ```
 
 <br/>
 
-3.  connect back-end
-please read back-end Readme [Back-end](https://github.com/TallTall22/Exhibition_back_end) 
+3.  連接後端
+請詳細閱讀後端 Readme [Back-end](https://github.com/TallTall22/Shop_BackEnd) 
 ```
-git clone https://github.com/TallTall22/Exhibition_back_end
+git clone https://github.com/TallTall22/Shop_BackEnd
+cd Shop_BackEnd
 npm install
 ```
 
@@ -64,78 +62,55 @@ npm install
 
 <br/>
 
-## **Run Server**
+## **啟動專案**
 
-1. Start server
+1. 啟動專案
 ```
-npm start
+npm run dev
 ```
 
-If you see  `webpack compiled successfully`  on terminal, it means the server is running successfully and you can start exploring [Exhibition](http://localhost:3000/) on your browser.
+如果成功會看到 vite 啟動的 Local 網址
 
 <br>
 
-2. Stop server
+2. 停止專案
 ```
 control + c
 ```
 <br/>
 <br/>
 
-# Seed Users
+# 預設使用者
 
 ## **Admin**
 1 available account
 
-* **account**: asd@asd
-  **password**: qwer
+* **account**: seller001
+  **password**: titaner
 
 <br/>
 
 ## **User**
 
-* **account**: user1@example.com 
-  **password**: 12345678
+* **account**: buyer678 
+  **password**: titaner
 
-* **account**: user2@example.com
-  **password**: 12345678
+* **account**: buyer789
+  **password**: titaner
 
 
 
 <br/>
 <br/>
 
-# Tech Stack
-- "react": "^18.2.0",
+# 開發工具
 - "axios": "^1.4.0",
-- "bootstrap": "^5.3.0",
-- "jsonwebtoken": "^9.0.0",
-- "react-bootstrap": "^2.7.4",
-- "react-dom": "^18.2.0",
-- "react-router-dom": "^6.12.1",
-- "react-scripts": "5.0.1",
-- "react-youtube": "^10.1.0",
-- "sass": "^1.62.1",
-- "swiper": "^9.4.1",
-- "web-vitals": "^2.1.4"
+- "vue": "^3.3.4",
+- "vue-router": "^4.2.2",
+- "naive-ui": "^2.34.4",
+- "sass": "^1.63.6",
+- "vite": "^4.3.9"
 <br>
 <br>
 
-#  Demo
-
-![Home Page & Video Page](https://github.com/TallTall22/Exhibition_front_end/blob/main/public/picture/Demo-1.png)
----
-![Exhibition Page](https://github.com/TallTall22/Exhibition_front_end/blob/main/public/picture/Demo-2.png)
----
-![Collection Page](https://github.com/TallTall22/Exhibition_front_end/blob/main/public/picture/Demo-3.png)
----
-![Ticket Page](https://github.com/TallTall22/Exhibition_front_end/blob/main/public/picture/Demo-4.png)
----
-![Buy Ticket Page](https://github.com/TallTall22/Exhibition_front_end/blob/main/public/picture/Demo-5.png)
----
-![Admin Page](https://github.com/TallTall22/Exhibition_front_end/blob/main/public/picture/Demo-6.png)
----
-![Admin Page](https://github.com/TallTall22/Exhibition_front_end/blob/main/public/picture/Demo-7.png)
----
----
 
