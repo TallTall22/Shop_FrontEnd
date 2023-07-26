@@ -123,7 +123,7 @@
         <select v-model="order" name="sort" id="" @change="handleSort">
           <option value="id">商品編號</option>
           <option value="price">價格</option>
-          <option value="cateogryId">種類</option>
+          <option value="categoryId">種類</option>
         </select>
         </div>
       <div class="search">

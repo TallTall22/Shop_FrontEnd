@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { reactive, ref } from 'vue'
 
-const baseUrl='http://35.78.96.242:3001/api'
+const baseUrl='http://localhost:3001/api'
 
 export const  loginAsync=()=>{
   const loginErrorMsg=ref('')

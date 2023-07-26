@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { ref } from 'vue'
 
-const baseUrl='http://35.78.96.242:3001/api'
+const baseUrl='http://localhost:3001/api'
 
 export const getAdminUsers=()=>{
   const userData=ref([])
