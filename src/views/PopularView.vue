@@ -18,7 +18,7 @@ getWomanPopularProduct()
 </script>
 <template>
   <n-card>
-    <h2>人氣排行榜</h2>
+    <h2>銷售排行榜</h2>
       <n-tabs type="segment" animated size="large">
         <n-tab-pane name="all" tab="全部商品">
           <n-table striped>
