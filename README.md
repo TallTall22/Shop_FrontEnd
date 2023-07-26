@@ -82,21 +82,21 @@ control + c
 
 # 預設使用者
 
-## **Admin**
+## **商家**
 1 available account
 
-* **account**: seller001
-  **password**: titaner
+* **帳號**: seller001
+  **密碼**: titaner
 
 <br/>
 
-## **User**
+## **顧客**
 
-* **account**: buyer678 
-  **password**: titaner
+* **帳號**: buyer678 
+  **密碼**: titaner
 
-* **account**: buyer789
-  **password**: titaner
+* **帳號**: buyer789
+  **密碼**: titaner
 
 
 
