@@ -1,4 +1,4 @@
-# 簡易購物網站前端
+<h1 align=center>簡易購物網站前端</h1>
 
 這是一個使用Vue 3開發的購物網站
 
@@ -112,5 +112,16 @@ control + c
 - "vite": "^4.3.9"
 <br>
 <br>
+
+#  Demo
+
+![Home Page](https://github.com/TallTall22/Shop_FrontEnd/blob/main/public/image/demo-1.png)
+---
+![Cart Page](https://github.com/TallTall22/Shop_FrontEnd/blob/main/public/image/demo-2.png)
+---
+![Popular Page & order Page](https://github.com/TallTall22/Shop_FrontEnd/blob/main/public/image/demo-3.png)
+---
+![Admin Page](https://github.com/TallTall22/Shop_FrontEnd/blob/main/public/image/demo-4.png)
+---
 
 
