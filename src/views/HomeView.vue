@@ -271,8 +271,8 @@
       overflow: hidden;
       margin-bottom: 2rem;
       img{
-        width: 400px;
-        height: 300px;
+        width: 360px;
+        height: 270px;
         cursor: pointer;
       }
       .card-body{
