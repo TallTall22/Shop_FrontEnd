@@ -58,7 +58,7 @@
       </div>
     </div>
 </template>
-<style lang="scss">
+<style lang="scss" scoped>
 .login-container{
   width:50%;
   display: flex;

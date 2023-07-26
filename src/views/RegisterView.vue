@@ -91,7 +91,7 @@
     </div>
   </div>
 </template>
-<style lang="scss">
+<style lang="scss" scoped>
 .register-container {
   width: 80%;
   display: flex;

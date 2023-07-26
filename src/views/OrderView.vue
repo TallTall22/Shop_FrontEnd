@@ -1,8 +1,13 @@
 <script setup>
+import {useRouter} from 'vue-router'
 import { getUserOrderAsync } from '../api/user';
 const { userOrders, getUserOrderMsg, getUserOrderErrorMsg, getUserOrder }=getUserOrderAsync()
+const router=useRouter()
 const authToken=localStorage.getItem('authToken')
 
+if(!authToken){
+  router.push('/login')
+}
 
 getUserOrder({authToken})
 </script>
@@ -38,7 +43,7 @@ getUserOrder({authToken})
     </div>
   </div>
 </template>
-<style lang="scss">
+<style lang="scss" scoped>
   .order-container{
     h2{
       text-align: center;

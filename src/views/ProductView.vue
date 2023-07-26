@@ -80,8 +80,8 @@ getProduct({id, authToken })
     </div>
 
     <!--Modal-->
-    <div class="quantity-modal-container" v-if="showQuantityModal">
-      <div class="quantity-modal">
+    <div class="error-modal-container" v-if="showQuantityModal">
+      <div class="error-modal">
         <h2>庫存</h2>
         <p>剩餘 : {{product.quantity}}</p>
         <button @click="closeQuantiyModal">關閉</button>
@@ -190,7 +190,7 @@ getProduct({id, authToken })
     }
   }
 
-   .quantity-modal-container {
+   .error-modal-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -201,7 +201,7 @@ getProduct({id, authToken })
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 999;
-.quantity-modal {
+.error-modal {
   display: flex;
   flex-direction: column;
   justify-content: space-around;

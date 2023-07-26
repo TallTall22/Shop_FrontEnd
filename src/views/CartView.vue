@@ -234,7 +234,7 @@ getCart({ authToken })
           </div>
         </div>
 </template>
-<style lang="scss">
+<style lang="scss" scoped>
   %done-phase{
     .progress-circle{
       background-color: #9b1b01;
@@ -388,6 +388,33 @@ getCart({ authToken })
       }
     }
   }
+
+  .error-modal-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+.error-modal {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  background-color: #fff;
+  max-width: 400px;
+  padding: 4rem;
+  border-radius: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  h2{
+    margin-bottom: 1rem;
+  }
+}
+}
 
   .cart{
     .progress-container{

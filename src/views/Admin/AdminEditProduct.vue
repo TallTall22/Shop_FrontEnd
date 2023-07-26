@@ -110,7 +110,7 @@ watchEffect(() => {
     
   </form>
 </template>
-<style lang="scss">
+<style lang="scss" scoped>
 form{
     background-color: #fff;
     width:100%;

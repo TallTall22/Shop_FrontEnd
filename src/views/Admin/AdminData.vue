@@ -217,7 +217,7 @@ const goProductPage = (id) => {
   </n-card>
 </template>
 
-<style>
+<style scoped>
 .createdButton{
   margin:1.5rem 1rem;
 }
