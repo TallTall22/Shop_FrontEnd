@@ -46,7 +46,8 @@ getFavorite({authToken})
         <h3>$NT {{ favorite.price }}</h3>
         <div class="button-group">
           <button class="btn unfavorite-btn" @click="handleDeleteFavorite(favorite.id)">移除收藏</button>
-          <button class="btn cart-btn" @click="handleCreateCart(favorite.id)">加入購物車</button>
+          <button v-if="favorite.quantity > 0" class="btn cart-btn" @click="handleCreateCart(favorite.id)">加入購物車</button>
+          <button v-if="favorite.quantity <= 0" class="btn cart-disabled" disabled>加入購物車</button>
         </div>
       </div>
     </div>
@@ -97,10 +98,10 @@ getFavorite({authToken})
               color: #fff;
               border: none;
               border-radius: 4px;
-              cursor: pointer;
              } 
             .cart-btn{
               background-color: #007bff;
+              cursor: pointer;
               &:hover {
             background-color: #0056b3;
           }
@@ -109,8 +110,12 @@ getFavorite({authToken})
             background-color: #003d80;
           }
         }
+        .cart-disabled{
+          background-color: #5cabff;
+        }
         .unfavorite-btn{
           background-color: #ef0101;
+          cursor: pointer;
           &:hover {
             background-color: #ac0303;
             }

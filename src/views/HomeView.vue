@@ -151,17 +151,19 @@
   </div>
 <div class="card-wrapper">
     <h2 v-if="!products[0]">沒有商品符合您的搜尋結果</h2>
-    <div v-for="product in products" :key="product.id" class="card">
+    <div v-for="product in products" :key="product.id" class="card" :style="{ opacity: product.quantity <= 0 ? 0.5 : 1 }">
      <img  :src="product.image" alt="" @click="goProductPage(product.id)">
     <div class="card-body">
       <h2>{{ product.name }}</h2>
       <p>{{ product.Category.name }}</p>
       <br>
       <h3>$NT {{ product.price }}</h3>
+      <h2 v-if="product.quantity <= 0" class="sold-out-text">售完</h2>
       <div class="button-group">
         <button v-if="!product.isFavorited" class="btn favorite-btn" @click="handleAddFavorite(product.id)">收藏</button>
         <button v-if="product.isFavorited" class="btn unfavorite-btn" @click="handleDeleteFavorite(product.id)">移除收藏</button>
-        <button class="btn cart-btn" @click="handleCreateCart(product.id)">加入購物車</button>
+        <button v-if="product.quantity>0" class="btn cart-btn" @click="handleCreateCart(product.id)">加入購物車</button>
+        <button v-if="product.quantity <= 0" class="btn cart-disabled" disabled>加入購物車</button>
       </div>
     </div>
   </div>
@@ -283,6 +285,10 @@
         h3{
           height: 2rem;
         }
+        .sold-out-text{
+          text-align: end;
+          color: #ac0303;
+        }
         .button-group{
           margin-top: 2rem;
           display: flex;
@@ -294,10 +300,10 @@
               color: #fff;
               border: none;
               border-radius: 4px;
-              cursor: pointer;
              } 
             .cart-btn{
               background-color: #007bff;
+              cursor: pointer;
               &:hover {
             background-color: #0056b3;
           }
@@ -305,6 +311,9 @@
           &:active {
             background-color: #003d80;
           }
+        }
+        .cart-disabled{
+          background-color: #5cabff;
         }
         .favorite-btn{
           background-color: #397e3c;

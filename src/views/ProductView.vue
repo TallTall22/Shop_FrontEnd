@@ -74,7 +74,8 @@ getProduct({id, authToken })
           <button v-if="!isFavorited" class="btn favorite-btn" @click="handleAddFavorite(product.id)">收藏</button>
           <button v-if="isFavorited" class="btn unfavorite-btn" @click="handleDeleteFavorite(product.id)">移除收藏</button>
           <button class="btn quantity-btn" @click="openQuantiyModal">查看庫存</button>
-          <button class="btn cart-btn" @click="handleCreateCart(product.id)">加入購物車</button>
+          <button v-if="product.quantity > 0" class="btn cart-btn" @click="handleCreateCart(product.id)">加入購物車</button>
+          <button v-if="product.quantity <= 0" class="btn cart-disabled" disabled>加入購物車</button>
         </div>
     </div>
     </div>
@@ -148,10 +149,10 @@ getProduct({id, authToken })
               color: #fff;
               border: none;
               border-radius: 4px;
-              cursor: pointer;
              } 
             .cart-btn{
               background-color: #007bff;
+              cursor: pointer;
               &:hover {
             background-color: #0056b3;
           }
@@ -159,8 +160,12 @@ getProduct({id, authToken })
             background-color: #003d80;
           }
         }
+        .cart-disabled{
+          background-color: #5cabff;
+        }
         .quantity-btn{
           background-color: #696969;
+          cursor: pointer;
           &:hover{
             background-color: #595959;
           }
@@ -170,6 +175,7 @@ getProduct({id, authToken })
         }
         .favorite-btn{
           background-color: #397e3c;
+          cursor: pointer;
           &:hover {
             background-color: #2a5f2d;
             }
@@ -179,6 +185,7 @@ getProduct({id, authToken })
         }
         .unfavorite-btn{
           background-color: #ef0101;
+          cursor: pointer;
           &:hover {
             background-color: #ac0303;
             }
