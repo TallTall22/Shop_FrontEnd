@@ -15,6 +15,9 @@ getUser(authToken)
     <nav class="nav">
         <ul class="navList" >
           <li class="navItem">     
+            <RouterLink to="/problem" class="navLink">問題反映</RouterLink>
+          </li>
+          <li class="navItem">     
             <RouterLink to="/popular" class="navLink">人氣商品</RouterLink>
           </li>
           <li class="navItem" >    
