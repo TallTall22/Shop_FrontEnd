@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { io } from 'socket.io-client';
 
-const socket = io("http://localhost:3001/", { transports: ['websocket'] });
+const socket = io("wss://test.just-for-test-shop.de/", { transports: ['websocket'] });
 const messages = ref([]);
 const temp = ref({ message: '', name: '' });
 const authToken=localStorage.getItem('authToken')
