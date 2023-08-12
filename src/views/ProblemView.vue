@@ -1,11 +1,17 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { io } from 'socket.io-client';
 
 const socket = io("http://localhost:3001/", { transports: ['websocket'] });
 const messages = ref([]);
 const temp = ref({ message: '', name: '' });
+const authToken=localStorage.getItem('authToken')
+const router=useRouter()
 
+if (!authToken) {
+    router.push('/login')
+}
 
     socket.on("message", obj => {
         messages.value = obj;

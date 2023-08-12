@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { ref } from 'vue'
 
-const baseUrl='http://localhost:3001/api'
+const baseUrl='https://test.just-for-test-shop.de/api'
 
 export const getAdminUsers=()=>{
   const userData=ref([])

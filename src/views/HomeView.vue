@@ -150,7 +150,8 @@
     </div>
   </div>
 <div class="card-wrapper">
-    <h2 v-if="!products[0]">沒有商品符合您的搜尋結果</h2>
+    <h2 v-if="!products[0] && minPrice || !products[0] && maxPrice || !products[0] && keyword || !products[0] && categoryId">沒有商品符合您的搜尋結果</h2>
+    <h2 v-if="!products[0] && !minPrice && !maxPrice && !keyword && !categoryId">Loading...</h2>
     <div v-for="product in products" :key="product.id" class="card" :style="{ opacity: product.quantity <= 0 ? 0.5 : 1 }">
      <img  :src="product.image" alt="" @click="goProductPage(product.id)">
     <div class="card-body">
