@@ -1,14 +1,25 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import { getUserAsync } from '../api/user';
-const { userData, getUserErrorMsg, getUser }=getUserAsync()
-const authToken=localStorage.getItem('authToken')
+import { ref } from 'vue';
+import { RouterLink, RouterView } from 'vue-router';
+import { useUserStore } from '../stores/user';
 
-const handleLogout=()=>{
-  localStorage.removeItem('authToken')
-}
+const userStore = useUserStore();
+const authToken = localStorage.getItem('authToken');
+const handleLogout = () => {
+  localStorage.removeItem('authToken');
+};
+const user = ref('');
+const error = ref('');
 
-getUser(authToken)
+const fetchUserData = async () => {
+  try {
+    await userStore.getUser(authToken);
+    user.value = userStore.userData;
+  } catch (err) {
+    error.value = err;
+  }
+};
+fetchUserData()
 </script>
 <template>
   <header>
@@ -28,13 +39,13 @@ getUser(authToken)
     <RouterLink to="/" class="navbarBrand">SHO</RouterLink>
     <nav class="nav">
       <ul class="navList" >
-        <li v-if="userData.isAdmin" class="navItem">     
+        <li v-if="user.isAdmin" class="navItem">     
             <RouterLink to="/admin" class="navLink">後台</RouterLink>
         </li>
-        <li v-if="!userData.isAdmin" class="navItem">     
+        <li v-if="!user.isAdmin" class="navItem">     
           <RouterLink to="/cart" class="navLink">購物車</RouterLink>
         </li>
-        <li v-if="!userData.isAdmin" class="navItem">     
+        <li v-if="!user.isAdmin" class="navItem">     
             <RouterLink to="/order" class="navLink">購買紀錄</RouterLink>
           </li>
         <li v-if="!authToken" class="navItem" >    
