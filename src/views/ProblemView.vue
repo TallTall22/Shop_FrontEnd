@@ -48,7 +48,7 @@ const handleSendMessage = () => {
         
         <ul>
             <li  v-for="m in messages" :key="m.id"  class="message-wrapper">
-                <div v-if="m.message" :class="{ 'chat-message': true, 'own-message': m.name === userStore.userData.account }" >
+                <div v-if="m.message" :class="{ 'chat-message': true, 'own-message': m.name === userStore.userData.account, 'seller-user':m.name==='seller001' }" >
                     <h4 class="name">{{ m.name }}</h4>
                     <p class="message-content">{{ m.message }}</p>
                 </div>
@@ -109,6 +109,15 @@ h2{
 
     .message-content {
         text-align: right;
+        }
+    }
+    .seller-user{
+        .name{
+            color: #a30183;
+        }
+
+        .message-content{
+            background-color: #ac0a6e;
         }
     }
     }
