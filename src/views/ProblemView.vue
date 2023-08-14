@@ -12,6 +12,10 @@ const error = ref('');
 const messages = ref([]);
 const temp = ref({ message: '', name:'' });
 
+if(!authToken){
+    router.push('/login')
+}
+
 socket.on("message", obj => {
     messages.value = obj;
 });
