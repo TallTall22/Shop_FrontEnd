@@ -94,6 +94,7 @@ h2{
         .message-content {
             margin: 5px 0;
             background-color: #7a5fb8;
+            text-align: center;
             border-radius: 4px;
             padding: 10px;
             font-size: 14px;

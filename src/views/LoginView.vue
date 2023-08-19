@@ -26,7 +26,7 @@
   }
 
   const handleGoogleLogin=()=>{
-    window.location.href='http://localhost:3001/api/auth/google'
+    window.location.href='https://test.just-for-test-shop.de/api/auth/google'
   }
 
     const closeErrorModal=()=>{
