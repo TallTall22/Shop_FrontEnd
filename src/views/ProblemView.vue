@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router';
 import { io } from 'socket.io-client';
 import { useUserStore } from '../stores/user';
 
-const socket = io("https://test.just-for-test-shop.de/", { transports: ['websocket'] });
+const socket = io("wss://test.just-for-test-shop.de/", { transports: ['websocket'] });
 const userStore = useUserStore();
 const authToken = localStorage.getItem('authToken')
 const router = useRouter();
