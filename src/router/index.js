@@ -70,6 +70,11 @@ const router = createRouter({
       component:()=>import('../views/ProblemView.vue')
     },
     {
+      path:'/auth/google/callback',
+      name:"auth",
+      component:()=>import('../views/AuthView.vue')
+    },
+    {
       path:'/:domain(.*)*',
       name:"error",
       component:()=>import('../views/ErrorView.vue')

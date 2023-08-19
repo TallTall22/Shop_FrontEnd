@@ -7,7 +7,6 @@
 
 <style lang="scss">
 footer{
-  width: 100%;
   padding: 1rem;
   background-color: #544f4f;
   text-align: center;

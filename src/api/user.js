@@ -18,6 +18,26 @@ export const  loginAsync=()=>{
   return {loginErrorMsg,login}
 }
 
+export const getGoogleLogin=()=>{
+  const token=ref([])
+
+  const LoginErrorMsg=ref('')
+  const GoogleLogin=async(code)=>{
+    try{
+      const res=await axios.get(baseUrl+'/auth/google/callback',{
+          params:{
+            code:code
+          }
+      })
+      token.value=res.data.data.token
+    }
+    catch(err){
+      LoginErrorMsg.value=err
+    }
+  }
+  return {token,LoginErrorMsg,GoogleLogin}
+}
+
 export const  registerAsync=()=>{
   const registerErrorMsg=ref('')
   const register=async(payload)=>{

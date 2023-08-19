@@ -25,6 +25,10 @@
     
   }
 
+  const handleGoogleLogin=()=>{
+    window.location.href='http://localhost:3001/api/auth/google'
+  }
+
     const closeErrorModal=()=>{
     showErrorModal.value=false
   }
@@ -44,6 +48,7 @@
     </div>
     <div class="button-group">
       <button type="submit">登入</button>
+      <button @click="handleGoogleLogin" class="google-login-button" type="button">使用Google帳號登入</button>
       <p>第一次來嗎? <a href="/register">註冊</a></p>
     </div>
     </div>   
@@ -64,7 +69,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 65vh;
   border: 5px solid #381c1c;
   border-radius: 6px;
   background-color: #fff;
@@ -104,8 +108,13 @@
       justify-content: center;
       button{
         margin-bottom: 1rem;
+        padding: 0.2rem;
         background-color: var(--major);
         color: #fff;
+        cursor: pointer;
+      }
+      .google-login-button{
+        background-color: #2352b9;
       }
     }
   }
