@@ -106,3 +106,46 @@ export const putOrderAsync=()=>{
 
   return {putOrderErrorMsg,putOrder}
 }
+
+export const postOrderAsync=()=>{
+  const postOrderErrorMsg=ref('')
+  const postOrder=async(payload)=>{
+    try{
+      const {authToken,orderId}=payload
+      const res=await axios.post(baseUrl+'/carts/linePay',{orderId},{
+        headers:{
+          Authorization:'Bearer '+ authToken
+        }
+      })
+      return res.data
+    }catch(err){
+      postOrderErrorMsg.value=err
+    }
+  }
+
+  return {postOrderErrorMsg,postOrder}
+}
+
+export const getLinePayConfirmAsync=()=>{
+  const getOrder=ref('')
+  const getLinePayConfirmErrorMsg=ref('')
+  const getLinePayConfirm=async(payload)=>{
+    try{
+      const {authToken,transactionId,orderId}=payload
+      const res=await axios.get(baseUrl+'/carts/linePay/confirm',{
+        headers:{
+          Authorization:'Bearer '+ authToken
+        },
+        params:{
+            transactionId,
+            orderId
+          }
+      })
+      getOrder.value=res.data.order
+    }catch(err){
+      getLinePayConfirmErrorMsg.value=err
+    }
+  }
+
+  return {getOrder,getLinePayConfirmErrorMsg,getLinePayConfirm}
+}

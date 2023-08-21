@@ -75,6 +75,11 @@ const router = createRouter({
       component:()=>import('../views/AuthView.vue')
     },
     {
+      path:'/linePay/confirm',
+      name:"linePayConfirm",
+      component:()=>import('../views/LinePayConfirmView.vue')
+    },
+    {
       path:'/:domain(.*)*',
       name:"error",
       component:()=>import('../views/ErrorView.vue')

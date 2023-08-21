@@ -1,11 +1,12 @@
 <script setup>
 import { ref} from 'vue'
-import {getCartAsync,patchCartAsync,deleteCartAsync,putOrderAsync} from '../api/cart'
+import {getCartAsync,patchCartAsync,deleteCartAsync,putOrderAsync,postOrderAsync} from '../api/cart'
 import {  useRouter } from 'vue-router';
 const { order,carts, cartMsg, amountData, getCartErrorMsg, getCart }= getCartAsync()
 const { patchCartMsg, patchCartErrorMsg, patchCart }= patchCartAsync()
 const { deleteCartErrorMsg, deleteCart }= deleteCartAsync()
 const { putOrderErrorMsg, putOrder }=putOrderAsync()
+const { postOrderErrorMsg, postOrder } = postOrderAsync()
 const step=ref(1)
 const amount = ref('')
 const paidMethod=ref('')
@@ -66,6 +67,17 @@ const handleCheckOrder=async({orderId})=>{
     router.push('/')
   }
 }
+
+//line pay
+const handleLinePay=async({orderId})=>{
+  if (!paidMethod.value || !amount.value || !name.value || !address.value || !phone.value || !email.value) return showErrorModal.value = true
+  const res = await putOrder({ authToken: authToken, orderId, paidMethod: paidMethod.value, amount: Number(amount.value), phone: phone.value, address: address.value, name: name.value })
+  const linePayres=await postOrder({authToken:authToken,orderId})
+  if(linePayres){
+    window.location.href=linePayres.paidUrl
+  }
+}
+
 //Modal
 const closeErrorModal=()=>{
   showErrorModal.value=false
@@ -141,6 +153,10 @@ getCart({ authToken })
             <input v-model="paidMethod" type="radio" name="paidMethod" value="貨到付款" >
             貨到付款
           </label>
+          <label class="paidMethod"> 
+            <input v-model="paidMethod" type="radio" name="paidMethod" value="LinePay" >
+              Line Pay
+            </label>
         </div>
 
 
@@ -187,7 +203,7 @@ getCart({ authToken })
             </div>
             </div>
           </div>
-          <div v-if="paidMethod==='貨到付款'" class="cash-on-delivery">
+          <div v-if="paidMethod==='貨到付款'||'LinePay'" class="cash-on-delivery">
               <div class="input-group">
                 <label for="name">姓名</label>
                 <input v-model="name" type="text" name="name">
@@ -219,7 +235,8 @@ getCart({ authToken })
       </div>
       <div class="button-group" dataphase="paidInfo" :step="step">
         <button @click="handleMinusStep">上一頁</button>
-        <button class="next" @click="handleCheckOrder({orderId:order.id})">完成訂單</button>
+        <button v-if="paidMethod !=='LinePay'" class="next" @click="handleCheckOrder({orderId:order.id})">完成訂單</button>
+        <button v-if="paidMethod === 'LinePay'" class="Line-pay-button" @click="handleLinePay({ orderId: order.id })">Line Pay</button>
       </div>
     </div>
   </div>
@@ -384,6 +401,7 @@ getCart({ authToken })
         justify-content: space-around;
         button{
           padding: 10px 20px;
+          border-radius: 5px;
         }
         .next{
             border:  none;
@@ -395,6 +413,18 @@ getCart({ authToken })
 
           &:active {
             background-color: #003d80;
+          }
+      }
+      .Line-pay-button{
+        border:  none;
+              color: #fff;
+              background-color: #10c000;
+              &:hover {
+            background-color: #119400;
+          }
+
+          &:active {
+            background-color: #005c05;
           }
       }
       }
