@@ -24,7 +24,6 @@ getUserOrder({authToken})
           <span>訂購時間 : {{userOrder.updatedAt.replace('.000Z',' ').replace('T',' ')}}</span>
           <span>總消費金額 : {{ userOrder.amount }}</span>
           <span>付款方式 : {{ userOrder.paidMethod }}</span>
-          <span>{{ userOrder.isPaid?已付款:未付款 }}</span>
           <span v-if="userOrder.isSent">狀態 : 商家已寄出</span>
           <span v-if="!userOrder.isSent">狀態 : 等待商家寄出</span>
         </div>
