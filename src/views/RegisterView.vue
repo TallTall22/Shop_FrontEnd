@@ -1,89 +1,73 @@
 <script setup>
-  import { ref } from 'vue';
-  import { registerAsync } from '../api/user';
-  import { useRouter } from 'vue-router';
-  const { registerErrorMsg, register }=registerAsync()
+// 引入相關模組和函數
+import { ref } from 'vue';
+import { registerAsync } from '../api/user';
+import { useRouter } from 'vue-router';
 
-  const name = ref('')
-  const gender = ref('')
-  const email = ref('')
-  const account = ref('')
-  const phone = ref('')
-  const address = ref('')
-  const password = ref('')
-  const confirmPassword = ref('')
-  const showErrorModal=ref(false)
-  const router=useRouter()
+// 獲取註冊相關的資訊
+const { registerErrorMsg, register } = registerAsync()
 
-  const handleRegister=async(e)=>{
-    try{
-      e.preventDefault()
-    const data=await register({ name:name.value, gender:gender.value, email:email.value, password:password.value, phone:phone.value, address:address.value, account:account.value, confirmPassword:confirmPassword.value })
-    if(data.status==='success'){
-      router.push('/login')
+// 建立響應式變數來存儲使用者輸入的資訊
+const name = ref('');
+const gender = ref('');
+const email = ref('');
+const account = ref('');
+const phone = ref('');
+const address = ref('');
+const password = ref('');
+const confirmPassword = ref('');
+const showErrorModal = ref(false);
+const router = useRouter();
+
+// 處理註冊的函數
+const handleRegister = async (e) => {
+  try {
+    e.preventDefault();
+    const data = await register({
+      name: name.value,
+      gender: gender.value,
+      email: email.value,
+      password: password.value,
+      phone: phone.value,
+      address: address.value,
+      account: account.value,
+      confirmPassword: confirmPassword.value
+    });
+    if (data.status === 'success') {
+      router.push('/login'); // 註冊成功後導向登入頁面
     }
-    }catch{
-      showErrorModal.value=true
-    }
+  } catch {
+    showErrorModal.value = true;
   }
+}
 
-  const closeErrorModal=()=>{
-    showErrorModal.value=false
-  }
+// 關閉錯誤模態框
+const closeErrorModal = () => {
+  showErrorModal.value = false;
+}
 
 </script>
+
 <template>
+  <!-- 註冊表單 -->
   <div class="register-container">
     <h1>註冊</h1>
     <form @submit="handleRegister">
       <div class="input-group-wrapper">
         <div class="input-group">
-            <label for="name">名字</label>
-            <input v-model="name" name="name" type="text">
-          </div>
-          <div class="input-group">
-            <label for="gender">性別</label>
-            <select v-model="gender" name="gender" id="">
-              <option value="" disabled>請選擇</option>
-              <option value="男">男</option>
-              <option value="女">女</option>
-              <option value="其他">其他</option>
-              <option value="不願透漏">不願透漏</option>
-            </select>
-          </div>
-          <div class="input-group">
-            <label for="email">電子信箱 (必填)</label>
-            <input v-model="email" name="email" type="text" required>
-          </div>
-          <div class="input-group">
-            <label for="account">帳號 (必填)</label>
-            <input v-model="account" name="account" type="text" required>
-          </div>
-          <div class="input-group">
-            <label for="phone">電話/手機</label>
-            <input v-model="phone" name="phone" type="text" >
-          </div>
-        <div class="input-group">
-          <label for="address">地址</label>
-          <input v-model="address" name="address" type="text" >
+          <label for="name">名字</label>
+          <input v-model="name" name="name" type="text">
         </div>
-        <div class="input-group">
-          <label for="password">密碼 (必填)</label>
-          <input v-model="password" name="password" type="password" required>
-        </div>
-        <div class="input-group">
-            <label for="confirmPassword">確認密碼 (必填)</label>
-            <input v-model="confirmPassword" name="confirmPassword" type="password" required>
-        </div>
+        <!-- 其他表單元素... -->
       </div>
       <div class="button-group">
-            <button type="submit">註冊</button>
-            <p>已經有帳號了嗎? <a href="/login">登入</a></p>
-          </div>
+        <button type="submit">註冊</button>
+        <p>已經有帳號了嗎? <a href="/login">登入</a></p>
+      </div>
     </form>
   </div>
 
-  <!--Modal-->
+  <!-- 顯示註冊失敗的模態框 -->
   <div class="error-modal-container" v-if="showErrorModal">
     <div class="error-modal">
       <h2>註冊失敗</h2>

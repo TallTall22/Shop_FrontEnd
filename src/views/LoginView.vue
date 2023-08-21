@@ -1,67 +1,84 @@
 <script setup>
-  import { ref } from 'vue';
-  import { loginAsync } from '../api/user';
-  import { useRouter } from 'vue-router';
-  const { loginErrorMsg, login }=loginAsync()
-  const router=useRouter()
-  const account=ref('')
-  const password=ref('')
-  const showErrorModal = ref(false)
+// 引入相關的模組和函數
+import { ref } from 'vue';
+import { loginAsync } from '../api/user';
+import { useRouter } from 'vue-router';
 
-  const handleLogin=async(e)=>{
-    try{
-      e.preventDefault()
-    const data=await login({account:account.value,password:password.value})
-    if(data.status==='success'){
-      const token=data.data.token
-      localStorage.setItem('authToken',token)
-      account.value=''
-      password.value=''
-      window.location.href='/'
+// 從 loginAsync 函數中獲取相關變數和方法
+const { loginErrorMsg, login } = loginAsync();
+
+// 獲取 Vue Router 的實例
+const router = useRouter();
+
+// 使用 ref 創建響應式變數
+const account = ref('');
+const password = ref('');
+const showErrorModal = ref(false);
+
+// 定義處理登入的函數
+const handleLogin = async (e) => {
+  try {
+    e.preventDefault();
+    // 呼叫 login 函數進行登入
+    const data = await login({ account: account.value, password: password.value });
+    if (data.status === 'success') {
+      // 若登入成功，將授權令牌儲存在本地儲存中
+      const token = data.data.token;
+      localStorage.setItem('authToken', token);
+      account.value = '';
+      password.value = '';
+      // 轉跳至首頁
+      router.push('/');
     }
-    }catch{
-      showErrorModal.value=true
-    }
-    
+  } catch {
+    // 若登入失敗，顯示錯誤彈窗
+    showErrorModal.value = true;
   }
+};
 
-  const handleGoogleLogin=()=>{
-    window.location.href='https://test.just-for-test-shop.de/api/auth/google'
-  }
+// 定義處理 Google 登入的函數
+const handleGoogleLogin = () => {
+  window.location.href = 'https://test.just-for-test-shop.de/api/auth/google';
+};
 
-    const closeErrorModal=()=>{
-    showErrorModal.value=false
-  }
+// 定義關閉錯誤彈窗的函數
+const closeErrorModal = () => {
+  showErrorModal.value = false;
+};
 </script>
-<template>
-<div class="login-container">
-    <h1>登入</h1>
-  <form @submit="handleLogin">
-    <div class="input-group-wrapper">
-      <div class="input-group">
-        <label for="account">帳號</label>
-        <input v-model="account" name="account" type="text" required>
-      </div>
-      <div class="input-group">
-        <label for="password">密碼</label>
-        <input v-model="password" name="password" type="password" required>
-    </div>
-    <div class="button-group">
-      <button type="submit">登入</button>
-      <button @click="handleGoogleLogin" class="google-login-button" type="button">使用Google帳號登入</button>
-      <p>第一次來嗎? <a href="/register">註冊</a></p>
-    </div>
-    </div>   
-  </form>
-</div>
 
-<!--Modal-->
-  <div class="error-modal-container" v-if="showErrorModal">
-      <div class="error-modal">
-        <h2>登入失敗</h2>
-        <button @click="closeErrorModal">關閉</button>
+<template>
+  <div class="login-container">
+    <h1>登入</h1>
+    <!-- 登入表單 -->
+    <form @submit="handleLogin">
+      <div class="input-group-wrapper">
+        <div class="input-group">
+          <label for="account">帳號</label>
+          <input v-model="account" name="account" type="text" required>
+        </div>
+        <div class="input-group">
+          <label for="password">密碼</label>
+          <input v-model="password" name="password" type="password" required>
+        </div>
+        <div class="button-group">
+          <!-- 提交登入表單 -->
+          <button type="submit">登入</button>
+          <!-- 使用 Google 帳號登入 -->
+          <button @click="handleGoogleLogin" class="google-login-button" type="button">使用Google帳號登入</button>
+          <p>第一次來嗎? <a href="/register">註冊</a></p>
+        </div>
       </div>
+    </form>
+  </div>
+
+  <!-- 登入失敗錯誤彈窗 -->
+  <div class="error-modal-container" v-if="showErrorModal">
+    <div class="error-modal">
+      <h2>登入失敗</h2>
+      <button @click="closeErrorModal">關閉</button>
     </div>
+  </div>
 </template>
 <style lang="scss" scoped>
 .login-container{

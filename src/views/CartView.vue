@@ -1,15 +1,19 @@
 <script setup>
-import { ref} from 'vue'
-import {getCartAsync,patchCartAsync,deleteCartAsync,putOrderAsync,postOrderAsync} from '../api/cart'
-import {  useRouter } from 'vue-router';
-const { order,carts, cartMsg, amountData, getCartErrorMsg, getCart }= getCartAsync()
-const { patchCartMsg, patchCartErrorMsg, patchCart }= patchCartAsync()
-const { deleteCartErrorMsg, deleteCart }= deleteCartAsync()
-const { putOrderErrorMsg, putOrder }=putOrderAsync()
+import { ref } from 'vue'
+import { getCartAsync, patchCartAsync, deleteCartAsync, putOrderAsync, postOrderAsync } from '../api/cart'
+import { useRouter } from 'vue-router';
+
+// 從 API 中取得購物車相關資訊
+const { order, carts, cartMsg, amountData, getCartErrorMsg, getCart } = getCartAsync()
+const { patchCartMsg, patchCartErrorMsg, patchCart } = patchCartAsync()
+const { deleteCartErrorMsg, deleteCart } = deleteCartAsync()
+const { putOrderErrorMsg, putOrder } = putOrderAsync()
 const { postOrderErrorMsg, postOrder } = postOrderAsync()
-const step=ref(1)
+
+// 創建相關的 ref 變數
+const step = ref(1)
 const amount = ref('')
-const paidMethod=ref('')
+const paidMethod = ref('')
 const name = ref('')
 const address = ref('')
 const phone = ref('')
@@ -19,75 +23,90 @@ const cardNumber2 = ref('')
 const cardNumber3 = ref('')
 const validDate = ref('')
 const cvc = ref('')
-const router=useRouter()
 
-const showErrorModal=ref(false)
-const authToken=localStorage.getItem('authToken')
+// 初始化 router
+const router = useRouter()
 
+// 創建 showErrorModal 的 ref 變數，用於顯示錯誤提示視窗
+const showErrorModal = ref(false)
+
+// 從本地儲存中獲取驗證令牌
+const authToken = localStorage.getItem('authToken')
+
+// 如果沒有驗證令牌，重新導向到登入頁面
 if (!authToken) {
   router.push('/login')
 }
-//quntity
-const handlePluseQuantity=async({ productId, cartId, quantity })=>{
 
-  const res =await patchCart({authToken,productId,cartId,quantity})
-}
-
-const handleMinusQuantity = async ({ productId, cartId, quantity }) => {
-
+// 處理增加商品數量
+const handlePluseQuantity = async ({ productId, cartId, quantity }) => {
   const res = await patchCart({ authToken, productId, cartId, quantity })
 }
 
-//delete cart
-const handleDeleteCart=async({cartId})=>{
-  await deleteCart({authToken,cartId})
+// 處理減少商品數量
+const handleMinusQuantity = async ({ productId, cartId, quantity }) => {
+  const res = await patchCart({ authToken, productId, cartId, quantity })
 }
 
-//step
-const handleForSecondStep=()=>{
-  amount.value=amountData.value
-  step.value+=1
+// 刪除購物車商品
+const handleDeleteCart = async ({ cartId }) => {
+  await deleteCart({ authToken, cartId })
 }
 
-const handleForThirdStep = () => {
-  if(!paidMethod.value) return showErrorModal.value=true
+// 進入第二步
+const handleForSecondStep = () => {
+  amount.value = amountData.value
   step.value += 1
 }
 
+// 進入第三步
+const handleForThirdStep = () => {
+  if (!paidMethod.value) return showErrorModal.value = true
+  step.value += 1
+}
+
+// 回到前一步
 const handleMinusStep = () => {
   step.value -= 1
 }
 
-//check order
-const handleCheckOrder=async({orderId})=>{
-  if(!paidMethod.value||!amount.value||!name.value||!address.value||!phone.value||!email.value) return showErrorModal.value=true
-  if(paidMethod.value==='信用卡'&&!cardNumber1.value|| paidMethod.value === '信用卡' && !cardNumber2.value|| paidMethod.value === '信用卡' && !cardNumber3.value|| paidMethod.value === '信用卡' && !validDate.value|| paidMethod.value === '信用卡' && !cvc.value)return showErrorModal.value=true
-  const res=await putOrder({authToken:authToken,orderId,paidMethod:paidMethod.value,amount:Number(amount.value),phone:phone.value,address:address.value,name:name.value})
-  if(res){
+// 檢查訂單資訊並提交訂單
+const handleCheckOrder = async ({ orderId }) => {
+  if (!paidMethod.value || !amount.value || !name.value || !address.value || !phone.value || !email.value) return showErrorModal.value = true
+  if (paidMethod.value === '信用卡' && (!cardNumber1.value || !cardNumber2.value || !cardNumber3.value || !validDate.value || !cvc.value)) return showErrorModal.value = true
+  const res = await putOrder({ authToken: authToken, orderId, paidMethod: paidMethod.value, amount: Number(amount.value), phone: phone.value, address: address.value, name: name.value })
+  if (res) {
     router.push('/')
   }
 }
 
-//line pay
-const handleLinePay=async({orderId})=>{
+// Line Pay 處理
+const handleLinePay = async ({ orderId }) => {
   if (!paidMethod.value || !amount.value || !name.value || !address.value || !phone.value || !email.value) return showErrorModal.value = true
   const res = await putOrder({ authToken: authToken, orderId, paidMethod: paidMethod.value, amount: Number(amount.value), phone: phone.value, address: address.value, name: name.value })
-  const linePayres=await postOrder({authToken:authToken,orderId})
-  if(linePayres){
-    window.location.href=linePayres.paidUrl
+  const linePayRes = await postOrder({ authToken: authToken, orderId })
+  if (linePayRes) {
+    window.location.href = linePayRes.paidUrl
   }
 }
 
-//Modal
-const closeErrorModal=()=>{
-  showErrorModal.value=false
+// 關閉錯誤提示視窗
+const closeErrorModal = () => {
+  showErrorModal.value = false
 }
+
+// 取得購物車資料
 getCart({ authToken })
 </script>
 <template>
-  <h4 v-if="cartMsg">{{cartMsg}}</h4>
+  <!-- 購物車訊息區域 -->
+  <h4 v-if="cartMsg">{{ cartMsg }}</h4>
   <div class="cart" v-if="!cartMsg">
+
+    <!-- 進度條容器 -->
     <div class="progress-container">
+
+      <!-- 商品確認階段 -->
       <span class="progress-group" dataphase="product" :step="step">
         <span class="progress-circle">
           <span class="progress-number">1</span>
@@ -95,6 +114,8 @@ getCart({ authToken })
         <div class="progress-text">確認商品</div>
       </span>
       <span class="progress-bar" dataOrder="1" :step="step"></span>
+
+      <!-- 付款方式選擇階段 -->
       <span class="progress-group" dataphase="paidMethod" :step="step">
         <span class="progress-circle">
           <span class="progress-number">2</span>
@@ -102,6 +123,8 @@ getCart({ authToken })
         <span class="progress-text">選擇付款方式</span>
       </span>
       <span class="progress-bar" dataOrder="2" :step="step"></span>
+
+      <!-- 填寫付款資訊階段 -->
       <span class="progress-group" dataphase="paidInfo" :step="step">
         <span class="progress-circle">
           <span class="progress-number">3</span>
@@ -109,8 +132,12 @@ getCart({ authToken })
         <span class="progress-text">填寫付款資訊</span>
       </span>
     </div>
+
+    <!-- 表單區域 -->
     <div class="form-container">
       <form>
+
+        <!-- 商品清單部分 -->
         <div class="part" dataphase="product" :step="step">
           <table>
             <thead>
@@ -125,132 +152,155 @@ getCart({ authToken })
             </thead>
             <tbody>
               <tr v-for="cart in carts" :key="cart.id">
-                <td> {{cart.Product.id}}</td>
-                <td> {{cart.Product.name}}</td>
-                <td> {{cart.Product.price}}</td>
+
+                <!-- 商品資訊 -->
+                <td>{{ cart.Product.id }}</td>
+                <td>{{ cart.Product.name }}</td>
+                <td>{{ cart.Product.price }}</td>
                 <td>
-                  <button @click="handleMinusQuantity({ productId: cart.Product.id, cartId: cart.id, quantity: cart.quantity - 1 })">-</button> 
-                  {{cart.quantity}}
-                  <button @click="handlePluseQuantity({productId:cart.Product.id,cartId:cart.id,quantity:cart.quantity+1})">+</button>
+                  <button
+                    @click="handleMinusQuantity({ productId: cart.Product.id, cartId: cart.id, quantity: cart.quantity - 1 })">-</button>
+                  {{ cart.quantity }}
+                  <button
+                    @click="handlePluseQuantity({ productId: cart.Product.id, cartId: cart.id, quantity: cart.quantity + 1 })">+</button>
                 </td>
-                <td> {{cart.Product.price*cart.quantity}}</td>
+                <td>{{ cart.Product.price * cart.quantity }}</td>
                 <td>
-                  <button class="delete" @click="handleDeleteCart({cartId:cart.id})">刪除</button>
+                  <button class="delete" @click="handleDeleteCart({ cartId: cart.id })">刪除</button>
                 </td>
               </tr>
             </tbody>
           </table>
+
+          <!-- 購物車總金額 -->
           <div class="cart-total">
             <h4>總消費金額：$NT {{ amountData }}</h4>
           </div>
         </div>
+
+        <!-- 付款方式選擇部分 -->
         <div class="part" dataphase="paidMethod" :step="step">
-          <label class="paidMethod"> 
-            <input v-model="paidMethod" type="radio" name="paidMethod" value="信用卡" >
+          <label class="paidMethod">
+            <input v-model="paidMethod" type="radio" name="paidMethod" value="信用卡">
             使用信用卡付款
           </label>
-          <label class="paidMethod"> 
-            <input v-model="paidMethod" type="radio" name="paidMethod" value="貨到付款" >
+          <label class="paidMethod">
+            <input v-model="paidMethod" type="radio" name="paidMethod" value="貨到付款">
             貨到付款
           </label>
-          <label class="paidMethod"> 
-            <input v-model="paidMethod" type="radio" name="paidMethod" value="LinePay" >
-              Line Pay
-            </label>
+          <label class="paidMethod">
+            <input v-model="paidMethod" type="radio" name="paidMethod" value="LinePay">
+            Line Pay
+          </label>
         </div>
 
-
+        <!-- 填寫付款資訊部分 -->
         <div class="part" dataphase="paidInfo" :step="step">
-          <div v-if="paidMethod==='信用卡'" class="credit-Card">
+
+          <!-- 信用卡付款資訊 -->
+          <div v-if="paidMethod === '信用卡'" class="credit-Card">
             <div class="input-group-row">
-              <div class="input-group">
-              <label for="name">姓名</label>
-              <input v-model="name" type="text" name="name" placeholder="張子房">
-            </div>
-            <div class="input-group">
-              <label for="email">電子信箱</label>
-              <input v-model="email" type="email" name="email" placeholder="example@gmail.com">
-            </div>
-            </div>
-            <div class="input-group-row">
-              <div class="input-group">
-              <label for="phone">電話</label>
-              <input v-model="phone" type="text" name="phone" placeholder="0912345678">
-            </div>
-            <div class="input-group">
-              <label for="address">地址</label>
-              <input v-model="address" type="text" name="address" placeholder="XX市XX區XX路XX號">
-            </div>
-            </div>
-            <div class="input-group-row">
-              <div class="input-group cardNumber">
-              <label for="cardNumber">卡號</label>
-              <div class="">
-                <input v-model="cardNumber1" type="text" name="cardNumber" maxlength="4" placeholder="1234"> -
-                <input v-model="cardNumber2" type="text" name="cardNumber" maxlength="4" placeholder="1234"> -
-                <input v-model="cardNumber3" type="text" name="cardNumber" maxlength="4" placeholder="1234">
-              </div>
-            </div>
-            </div>
-            <div class="input-group-row">
-              <div class="input-group">
-              <label for="validDate">到期日</label>
-              <input v-model="validDate" type="text" name="validDate" placeholder="mm/yy">
-            </div>
-            <div class="input-group">
-              <label for="cvc">CVC/CCV</label>
-              <input v-model="cvc" type="text" name="cvc" maxlength="3" placeholder="123">
-            </div>
-            </div>
-          </div>
-          <div v-if="paidMethod==='貨到付款'||'LinePay'" class="cash-on-delivery">
               <div class="input-group">
                 <label for="name">姓名</label>
-                <input v-model="name" type="text" name="name">
+                <input v-model="name" type="text" name="name" placeholder="張子房">
               </div>
               <div class="input-group">
                 <label for="email">電子信箱</label>
-                <input v-model="email" type="email" name="email">
+                <input v-model="email" type="email" name="email" placeholder="example@gmail.com">
               </div>
+            </div>
+            <div class="input-group-row">
               <div class="input-group">
                 <label for="phone">電話</label>
-                <input v-model="phone" type="text" name="phone">
+                <input v-model="phone" type="text" name="phone" placeholder="0912345678">
               </div>
               <div class="input-group">
                 <label for="address">地址</label>
-                <input v-model="address" type="text" name="address">
+                <input v-model="address" type="text" name="address" placeholder="XX市XX區XX路XX號">
               </div>
+            </div>
+            <div class="input-group-row">
+              <div class="input-group cardNumber">
+                <label for="cardNumber">卡號</label>
+                <div class="">
+                  <input v-model="cardNumber1" type="text" name="cardNumber" maxlength="4" placeholder="1234"> -
+                  <input v-model="cardNumber2" type="text" name="cardNumber" maxlength="4" placeholder="1234"> -
+                  <input v-model="cardNumber3" type="text" name="cardNumber" maxlength="4" placeholder="1234">
+                </div>
+              </div>
+            </div>
+            <div class="input-group-row">
+              <div class="input-group">
+                <label for="validDate">到期日</label>
+                <input v-model="validDate" type="text" name="validDate" placeholder="mm/yy">
+              </div>
+              <div class="input-group">
+                <label for="cvc">CVC/CCV</label>
+                <input v-model="cvc" type="text" name="cvc" maxlength="3" placeholder="123">
+              </div>
+            </div>
+          </div>
+
+          <!-- 貨到付款或 Line Pay 資訊 -->
+          <div v-if="paidMethod === '貨到付款' || 'LinePay'" class="cash-on-delivery">
+            <div class="input-group">
+              <label for="name">姓名</label>
+              <input v-model="name" type="text" name="name">
+            </div>
+            <div class="input-group">
+              <label for="email">電子信箱</label>
+              <input v-model="email" type="email" name="email">
+            </div>
+            <div class="input-group">
+              <label for="phone">電話</label>
+              <input v-model="phone" type="text" name="phone">
+            </div>
+            <div class="input-group">
+              <label for="address">地址</label>
+              <input v-model="address" type="text" name="address">
+            </div>
           </div>
         </div>
       </form>
     </div>
+
+    <!-- 進度條下方按鈕 -->
     <div class="progress-button">
+
+      <!-- 商品確認階段按鈕 -->
       <div class="button-group" dataphase="product" :step="step">
         <button disabled>上一頁</button>
         <button class="next" @click="handleForSecondStep">下一頁</button>
       </div>
+
+      <!-- 付款方式選擇階段按鈕 -->
       <div class="button-group" dataphase="paidMethod" :step="step">
         <button @click="handleMinusStep">上一頁</button>
         <button class="next" @click="handleForThirdStep">下一頁</button>
       </div>
+      
+      <!-- 填寫付款資訊階段按鈕 -->
       <div class="button-group" dataphase="paidInfo" :step="step">
         <button @click="handleMinusStep">上一頁</button>
-        <button v-if="paidMethod !=='LinePay'" class="next" @click="handleCheckOrder({orderId:order.id})">完成訂單</button>
-        <button v-if="paidMethod === 'LinePay'" class="Line-pay-button" @click="handleLinePay({ orderId: order.id })">Line Pay</button>
+        <button v-if="paidMethod !== 'LinePay'" class="next"
+          @click="handleCheckOrder({ orderId: order.id })">完成訂單</button>
+        <button v-if="paidMethod === 'LinePay'" class="Line-pay-button" @click="handleLinePay({ orderId: order.id })">Line
+          Pay</button>
       </div>
     </div>
   </div>
 
-  <!--Modal-->
-        <div class="error-modal-container" v-if="showErrorModal">
-          <div class="error-modal">
-            <h2>警示</h2>
-            <p v-if="!paidMethod">請選擇付款方式</p>
-            <p v-if="paidMethod">所有資料都必須填寫喔!</p>
-            <button @click="closeErrorModal">關閉</button>
-          </div>
-        </div>
+  <!-- 錯誤訊息 Modal -->
+  <div class="error-modal-container" v-if="showErrorModal">
+    <div class="error-modal">
+      <h2>警示</h2>
+      <p v-if="!paidMethod">請選擇付款方式</p>
+      <p v-if="paidMethod">所有資料都必須填寫喔！</p>
+      <button @click="closeErrorModal">關閉</button>
+    </div>
+</div>
 </template>
+
 <style lang="scss" scoped>
   %done-phase{
     .progress-circle{
@@ -329,6 +379,7 @@ getCart({ authToken })
             border: 1px solid #000;
             text-align:center;
             padding: 1rem;
+            flex-wrap: nowrap;
           }
           .cart-total{
             margin-top: 1rem;

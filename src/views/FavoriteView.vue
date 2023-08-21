@@ -1,51 +1,71 @@
 <script setup>
-  import { useRouter } from 'vue-router';
-  import { deleteFavoriteAsync,getFavoriteAsync } from '../api/user';
-  import { postCartAsync } from '../api/cart';
-  const { favorites, favoriteMsg, getFavoriteErrorMsg, getFavorite }= getFavoriteAsync()
-  const { deleteFavoriteErrorMsg, deleteFavorite } = deleteFavoriteAsync()
-  const { postCartMsg, postCartErrorMsg, postCart } = postCartAsync()
-  const router=useRouter()
-  const authToken=localStorage.getItem('authToken')
-  if(!authToken){
-    router.push('/login')
-  }
+import { useRouter } from 'vue-router';
+import { deleteFavoriteAsync, getFavoriteAsync } from '../api/user';
+import { postCartAsync } from '../api/cart';
 
-  const goProductPage = (id) => {
-  router.push(`/products/${id}`)
+// 取得收藏商品相關資料
+const { favorites, favoriteMsg, getFavoriteErrorMsg, getFavorite } = getFavoriteAsync();
+
+// 刪除收藏商品相關資料
+const { deleteFavoriteErrorMsg, deleteFavorite } = deleteFavoriteAsync();
+
+// 購物車相關資料
+const { postCartMsg, postCartErrorMsg, postCart } = postCartAsync();
+
+// 路由相關設定
+const router = useRouter();
+const authToken = localStorage.getItem('authToken');
+
+// 如果未登入，導向登入頁面
+if (!authToken) {
+  router.push('/login');
 }
 
-  const handleDeleteFavorite = async (productId) => {
-  const res = await deleteFavorite({ authToken, productId })
+// 前往商品頁面
+const goProductPage = (id) => {
+  router.push(`/products/${id}`);
+};
+
+// 處理刪除收藏商品
+const handleDeleteFavorite = async (productId) => {
+  const res = await deleteFavorite({ authToken, productId });
   if (res) {
-    getFavorite({authToken})
+    getFavorite({ authToken });
   }
-}
+};
 
-  const handleCreateCart = async (productId) => {
-  const res = await postCart({ authToken, productId })
+// 處理新增購物車商品
+const handleCreateCart = async (productId) => {
+  const res = await postCart({ authToken, productId });
   if (res) {
-    getFavorite({ authToken })
+    getFavorite({ authToken });
   }
-}
+};
 
+// 關閉購物車錯誤訊息 Modal
 const closeCartErrorModal = () => {
-  postCartMsg.value = ''
-}
+  postCartMsg.value = '';
+};
 
-getFavorite({authToken})
+// 取得收藏商品資料
+getFavorite({ authToken });
 </script>
+
 <template>
+  <!-- 收藏商品資訊區域 -->
   <h4 v-if="favoriteMsg">{{ favoriteMsg }}</h4>
-    <div v-if="!favoriteMsg" class="card-wrapper">
-      <div v-for="favorite in favorites" :key="favorite.id" class="card">
-       <img  :src="favorite.image" alt="" @click="goProductPage(favorite.id)">
+  <div v-if="!favoriteMsg" class="card-wrapper">
+    <!-- 迴圈顯示收藏商品 -->
+    <div v-for="favorite in favorites" :key="favorite.id" class="card">
+      <img :src="favorite.image" alt="" @click="goProductPage(favorite.id)">
       <div class="card-body">
         <h2>{{ favorite.name }}</h2>
         <br>
         <h3>$NT {{ favorite.price }}</h3>
         <div class="button-group">
+          <!-- 移除收藏按鈕 -->
           <button class="btn unfavorite-btn" @click="handleDeleteFavorite(favorite.id)">移除收藏</button>
+          <!-- 加入購物車按鈕 -->
           <button v-if="favorite.quantity > 0" class="btn cart-btn" @click="handleCreateCart(favorite.id)">加入購物車</button>
           <button v-if="favorite.quantity <= 0" class="btn cart-disabled" disabled>加入購物車</button>
         </div>
@@ -53,14 +73,14 @@ getFavorite({authToken})
     </div>
   </div>
 
-  <!--Modal-->
-        <div class="error-modal-container" v-if="postCartMsg">
-            <div class="error-modal">
-              <h2>提醒</h2>
-              <p>{{ postCartMsg }}</p>
-              <button @click="closeCartErrorModal">關閉</button>
-            </div>
-          </div>
+  <!-- 購物車錯誤訊息 Modal -->
+  <div class="error-modal-container" v-if="postCartMsg">
+    <div class="error-modal">
+      <h2>提醒</h2>
+      <p>{{ postCartMsg }}</p>
+      <button @click="closeCartErrorModal">關閉</button>
+    </div>
+  </div>
 </template>
 <style lang="scss" scoped>
   .card-wrapper{

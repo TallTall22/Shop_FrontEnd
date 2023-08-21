@@ -1,20 +1,25 @@
 <script setup>
-import {ref} from 'vue'
+// 引入相關的模組和函數
+import { ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { getViewsProduct } from '../api/product';
 import { addFavoriteAsync, deleteFavoriteAsync } from '../api/user'
 import { postCartAsync } from '../api/cart';
-const { product, isFavorited, productErrorMsg, getProduct }=getViewsProduct()
+
+// 獲取商品資訊、收藏狀態等
+const { product, isFavorited, productErrorMsg, getProduct } = getViewsProduct()
 const { addFavoriteErrorMsg, addFavorite } = addFavoriteAsync()
 const { deleteFavoriteErrorMsg, deleteFavorite } = deleteFavoriteAsync()
 const { postCartMsg, postCartErrorMsg, postCart } = postCartAsync()
 
-const showErrorModal=ref(false)
-const showQuantityModal=ref(false)
+// 建立響應式變數
+const showErrorModal = ref(false)
+const showQuantityModal = ref(false)
 const router = useRoute()
 const id = router.params.id
-const authToken=localStorage.getItem('authToken')
+const authToken = localStorage.getItem('authToken')
 
+// 處理添加收藏的函數
 const handleAddFavorite = async (productId) => {
   if (!authToken) return showErrorModal.value = true
   const res = await addFavorite({ authToken, productId })
@@ -23,6 +28,7 @@ const handleAddFavorite = async (productId) => {
   }
 }
 
+// 處理移除收藏的函數
 const handleDeleteFavorite = async (productId) => {
   if (!authToken) return showErrorModal.value = true
   const res = await deleteFavorite({ authToken, productId })
@@ -31,6 +37,7 @@ const handleDeleteFavorite = async (productId) => {
   }
 }
 
+// 處理添加到購物車的函數
 const handleCreateCart = async (productId) => {
   if (!authToken) return showErrorModal.value = true
   const res = await postCart({ authToken, productId })
@@ -39,29 +46,38 @@ const handleCreateCart = async (productId) => {
   }
 }
 
+// 關閉庫存錯誤模態框
 const closeCartErrorModal = () => {
   postCartMsg.value = ''
 }
 
+// 關閉錯誤模態框
 const closeErrorModal = () => {
   showErrorModal.value = false
 }
 
-const openQuantiyModal =()=>{
-  showQuantityModal.value=true
+// 開啟庫存模態框
+const openQuantiyModal = () => {
+  showQuantityModal.value = true
 }
 
-const closeQuantiyModal=()=>{
+// 關閉庫存模態框
+const closeQuantiyModal = () => {
   showQuantityModal.value = false
 }
 
-getProduct({id, authToken })
+// 獲取商品資訊
+getProduct({ id, authToken })
 </script>
+
 <template>
+  <!-- 產品資訊介面 -->
   <div class="product-container">
+    <!-- 產品圖片容器 -->
     <div class="image-container">
       <img :src="product.image" :alt="product.name">
     </div>
+    <!-- 產品資訊 -->
     <div class="info">
       <h2>{{ product.name }}</h2>
       <p>商品編號 : {{ product.id }}</p>
@@ -70,42 +86,43 @@ getProduct({id, authToken })
         <li class="price">$NT<span>{{ product.price }}</span></li>
         <li>商品介紹 : {{ product.description }}</li>
       </ul>
+      <!-- 按鈕群組 -->
       <div class="button-group">
-          <button v-if="!isFavorited" class="btn favorite-btn" @click="handleAddFavorite(product.id)">收藏</button>
-          <button v-if="isFavorited" class="btn unfavorite-btn" @click="handleDeleteFavorite(product.id)">移除收藏</button>
-          <button class="btn quantity-btn" @click="openQuantiyModal">查看庫存</button>
-          <button v-if="product.quantity > 0" class="btn cart-btn" @click="handleCreateCart(product.id)">加入購物車</button>
-          <button v-if="product.quantity <= 0" class="btn cart-disabled" disabled>加入購物車</button>
-        </div>
-    </div>
-    </div>
-
-    <!--Modal-->
-    <div class="error-modal-container" v-if="showQuantityModal">
-      <div class="error-modal">
-        <h2>庫存</h2>
-        <p>剩餘 : {{product.quantity}}</p>
-        <button @click="closeQuantiyModal">關閉</button>
+        <button v-if="!isFavorited" class="btn favorite-btn" @click="handleAddFavorite(product.id)">收藏</button>
+        <button v-if="isFavorited" class="btn unfavorite-btn" @click="handleDeleteFavorite(product.id)">移除收藏</button>
+        <button class="btn quantity-btn" @click="openQuantiyModal">查看庫存</button>
+        <button v-if="product.quantity > 0" class="btn cart-btn" @click="handleCreateCart(product.id)">加入購物車</button>
+        <button v-if="product.quantity <= 0" class="btn cart-disabled" disabled>加入購物車</button>
       </div>
     </div>
+  </div>
 
-        <div class="error-modal-container" v-if="showErrorModal">
-          <div class="error-modal">
-            <h2>警示</h2>
-            <p>請先登入!</p>
-            <button @click="closeErrorModal">關閉</button>
-          </div>
-        </div>
+  <!-- 顯示庫存數量的模態框 -->
+  <div class="error-modal-container" v-if="showQuantityModal">
+    <div class="error-modal">
+      <h2>庫存</h2>
+      <p>剩餘 : {{ product.quantity }}</p>
+      <button @click="closeQuantiyModal">關閉</button>
+    </div>
+  </div>
 
-        <div class="error-modal-container" v-if="postCartMsg">
-            <div class="error-modal">
-              <h2>提醒</h2>
-              <p>{{ postCartMsg }}</p>
-              <button @click="closeCartErrorModal">關閉</button>
-            </div>
-          </div>
+  <!-- 顯示錯誤的模態框 -->
+  <div class="error-modal-container" v-if="showErrorModal">
+    <div class="error-modal">
+      <h2>警示</h2>
+      <p>請先登入!</p>
+      <button @click="closeErrorModal">關閉</button>
+    </div>
+  </div>
 
-
+  <!-- 顯示購物車提示的模態框 -->
+  <div class="error-modal-container" v-if="postCartMsg">
+    <div class="error-modal">
+      <h2>提醒</h2>
+      <p>{{ postCartMsg }}</p>
+      <button @click="closeCartErrorModal">關閉</button>
+    </div>
+  </div>
 </template>
 <style lang="scss" scoped>
 .product-container{

@@ -1,131 +1,142 @@
 <script setup>
-  import { onMounted, ref } from 'vue';
-  import {getViewsProducts} from '../api/product'
-  import { addFavoriteAsync, deleteFavoriteAsync } from '../api/user'
-  import { postCartAsync } from '../api/cart';
-  import { RouterLink, useRouter } from 'vue-router';
-   import {NButton} from 'naive-ui'
-  const { products,categories, pagination, productsErrorMsg, getProducts } = getViewsProducts()
-  const { addFavoriteErrorMsg, addFavorite }=addFavoriteAsync()
-  const { deleteFavoriteErrorMsg, deleteFavorite }=deleteFavoriteAsync()
-  const { postCartMsg,postCartErrorMsg, postCart }=postCartAsync()
+// 引入必要的模組和函數
+import { onMounted, ref } from 'vue';
+import { getViewsProducts } from '../api/product';
+import { addFavoriteAsync, deleteFavoriteAsync } from '../api/user';
+import { postCartAsync } from '../api/cart';
+import { RouterLink, useRouter } from 'vue-router';
+import { NButton } from 'naive-ui';
 
-  const router=useRouter()
-  const categoryId =ref('')
-  const keyword=ref('')
-  const order=ref('')
-  const minPrice=ref('')
-  const maxPrice=ref('')
-  const page=ref(1) 
-  const showErrorModal = ref(false)
-  const authToken=localStorage.getItem('authToken')
+// 使用解構賦值從 getViewsProducts 函數中獲取相關變數和方法
+const { products, categories, pagination, productsErrorMsg, getProducts } = getViewsProducts();
+const { addFavoriteErrorMsg, addFavorite } = addFavoriteAsync();
+const { deleteFavoriteErrorMsg, deleteFavorite } = deleteFavoriteAsync();
+const { postCartMsg, postCartErrorMsg, postCart } = postCartAsync();
 
-  const goProductPage=(id)=>{
-    router.push(`/products/${id}`)
-  }
+// 初始化相關變數
+const router = useRouter();
+const categoryId = ref('');
+const keyword = ref('');
+const order = ref('');
+const minPrice = ref('');
+const maxPrice = ref('');
+const page = ref(1);
+const showErrorModal = ref(false);
+const authToken = localStorage.getItem('authToken');
 
-  //search
-  const handleSearchName = async() => {
-  router.push({ path: '/', query: { keyword: keyword.value} })
-  page.value = 1
-  await getProducts({ authToken, categoryId: categoryId.value, page: page.value,keyword:keyword.value, order: order.value,minPrice:minPrice.value,maxPrice:maxPrice.value })
-}
+// 跳轉至商品詳細頁面
+const goProductPage = (id) => {
+  router.push(`/products/${id}`);
+};
 
-  const handleSearchMoney = async () => {
-  router.push({ path: '/', query: { minPrice: minPrice.value,maxPrice:maxPrice.value } })
-  page.value = 1
-  await getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword: keyword.value, order: order.value, minPrice: minPrice.value, maxPrice: maxPrice.value })
-}
+// 搜尋相關功能
+const handleSearchName = async () => {
+  router.push({ path: '/', query: { keyword: keyword.value } });
+  page.value = 1;
+  await getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword: keyword.value, order: order.value, minPrice: minPrice.value, maxPrice: maxPrice.value });
+};
 
-  const handleSort = async () => {
-  router.push({ path: '/', query: { order:order.value } })
-  page.value = 1
-  await getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword: keyword.value, order: order.value, minPrice: minPrice.value, maxPrice: maxPrice.value })
-}
+const handleSearchMoney = async () => {
+  router.push({ path: '/', query: { minPrice: minPrice.value, maxPrice: maxPrice.value } });
+  page.value = 1;
+  await getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword: keyword.value, order: order.value, minPrice: minPrice.value, maxPrice: maxPrice.value });
+};
 
-  //category
-  const handleChangeCategoryId=(id)=>{
-    categoryId.value=id
-    page.value=1
-    getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword: keyword.value, order: order.value, minPrice: minPrice.value, maxPrice: maxPrice.value })
-  }
+// 排序相關功能
+const handleSort = async () => {
+  router.push({ path: '/', query: { order: order.value } });
+  page.value = 1;
+  await getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword: keyword.value, order: order.value, minPrice: minPrice.value, maxPrice: maxPrice.value });
+};
 
-  const isActive = (id) => {
+// 商品分類切換相關功能
+const handleChangeCategoryId = (id) => {
+  categoryId.value = id;
+  page.value = 1;
+  getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword: keyword.value, order: order.value, minPrice: minPrice.value, maxPrice: maxPrice.value });
+};
+
+// 判斷商品分類是否為當前選中的分類
+const isActive = (id) => {
   return categoryId.value === id;
 };
 
-  //favorite
-  const handleAddFavorite=async(productId)=>{
-    if(!authToken) return showErrorModal.value=true
-    const res=await addFavorite({authToken,productId})
-    if(res){
-    getProducts({ authToken, categoryId: categoryId.value, page: page.value , keyword: keyword.value, order: order.value, minPrice: minPrice.value, maxPrice: maxPrice.value })
-    }
+// 收藏相關功能
+const handleAddFavorite = async (productId) => {
+  if (!authToken) return showErrorModal.value = true;
+  const res = await addFavorite({ authToken, productId });
+  if (res) {
+    getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword: keyword.value, order: order.value, minPrice: minPrice.value, maxPrice: maxPrice.value });
   }
-  
-  const handleDeleteFavorite=async(productId)=>{
-    if(!authToken) return showErrorModal.value=true
-    const res=await deleteFavorite({authToken,productId})
-    if(res){
-    getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword: keyword.value, order: order.value, minPrice: minPrice.value, maxPrice: maxPrice.value })
-    }
-  }
-  
-  const closeErrorModal = () => {
-  showErrorModal.value = false
-}
+};
 
-  //cart
-  const handleCreateCart=async(productId)=>{
-    if (!authToken) return showErrorModal.value = true
-    const res=await postCart({authToken, productId })
-    if (res) {
-    getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword: keyword.value, order: order.value, minPrice: minPrice.value, maxPrice: maxPrice.value })
-    }
+const handleDeleteFavorite = async (productId) => {
+  if (!authToken) return showErrorModal.value = true;
+  const res = await deleteFavorite({ authToken, productId });
+  if (res) {
+    getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword: keyword.value, order: order.value, minPrice: minPrice.value, maxPrice: maxPrice.value });
   }
+};
 
-  const closeCartErrorModal=()=>{
-    postCartMsg.value=''
+// 關閉錯誤訊息 Modal
+const closeErrorModal = () => {
+  showErrorModal.value = false;
+};
+
+// 加入購物車相關功能
+const handleCreateCart = async (productId) => {
+  if (!authToken) return showErrorModal.value = true;
+  const res = await postCart({ authToken, productId });
+  if (res) {
+    getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword: keyword.value, order: order.value, minPrice: minPrice.value, maxPrice: maxPrice.value });
   }
+};
 
-  //pagination
-  const handleChangePage = async (pageNumber) => {
-    page.value = pageNumber
-    getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword: keyword.value, order: order.value, minPrice: minPrice.value, maxPrice: maxPrice.value })
-    window.scrollTo(0, 0)
-  }
+// 關閉購物車錯誤訊息 Modal
+const closeCartErrorModal = () => {
+  postCartMsg.value = '';
+};
 
-  const handlePrevPage=async()=>{
-    page.value= pagination.prev
-    getProducts({ authToken, categoryId: categoryId.value, page: page.value , keyword: keyword.value, order: order.value, minPrice: minPrice.value, maxPrice: maxPrice.value })
-    window.scrollTo(0, 0)
-  }
+// 分頁相關功能
+const handleChangePage = async (pageNumber) => {
+  page.value = pageNumber;
+  getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword: keyword.value, order: order.value, minPrice: minPrice.value, maxPrice: maxPrice.value });
+  window.scrollTo(0, 0);
+};
 
-  const handleNextPage=async()=>{
-    page.value= pagination.next
-    getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword: keyword.value, order: order.value, minPrice: minPrice.value, maxPrice: maxPrice.value })
-    window.scrollTo(0, 0)
-  }
+const handlePrevPage = async () => {
+  page.value = pagination.prev;
+  getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword: keyword.value, order: order.value, minPrice: minPrice.value, maxPrice: maxPrice.value });
+  window.scrollTo(0, 0);
+};
 
-  const isCurrnetPage = (pageNumber) => {
+const handleNextPage = async () => {
+  page.value = pagination.next;
+  getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword: keyword.value, order: order.value, minPrice: minPrice.value, maxPrice: maxPrice.value });
+  window.scrollTo(0, 0);
+};
+
+// 判斷分頁是否為當前頁面
+const isCurrnetPage = (pageNumber) => {
   return page.value === pageNumber;
 };
 
-  
-  getProducts({authToken, categoryId:categoryId.value, page:page.value, keyword: keyword.value, order: order.value, minPrice: minPrice.value, maxPrice: maxPrice.value })
-  </script>
+// 初始化頁面數據
+getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword: keyword.value, order: order.value, minPrice: minPrice.value, maxPrice: maxPrice.value });
+</script>
 
 <template>
+  <!-- 商品分類和搜尋區塊 -->
   <div class="classify-container">
     <div class="search-container">
       <div class="sort-wrapper">
-          <label for="sort">排序</label>
+        <label for="sort">排序</label>
         <select v-model="order" name="sort" id="" @change="handleSort">
           <option value="id">商品編號</option>
           <option value="price">價格</option>
           <option value="categoryId">種類</option>
         </select>
-        </div>
+      </div>
       <div class="search">
         <input v-model="keyword" type="text" name="keyword">
         <n-button type="info" @click="handleSearchName">搜尋</n-button>
@@ -137,69 +148,84 @@
         <input v-model="maxPrice" type="number" name="maxPrice" step="10" :min="minPrice">
         <n-button type="info" @click="handleSearchMoney">搜尋</n-button>
       </div>
-    </div>  
+    </div>
     <div class="">
       <ul>
+        <!-- 全部商品分類 -->
+        <li>
+          <RouterLink :to="{ path: '/', query: { categoryId: '' } }" @click="handleChangeCategoryId('')">全部</RouterLink>
+        </li>
+        <!-- 循環顯示各分類的連結 -->
+        <li v-for="category in categories" :key="category.id">
+          <RouterLink :class="{ active: isActive(category.id) }" :to="{ path: '/', query: { categoryId: category.id } }"
+            @click="handleChangeCategoryId(category.id)">{{ category.name }}</RouterLink>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <!-- 商品展示區塊 -->
+  <div class="card-wrapper">
+    <!-- 顯示無符合搜尋結果的提示 -->
+    <h2 v-if="!products[0] && (minPrice || maxPrice || keyword || categoryId)">沒有商品符合您的搜尋結果</h2>
+    <!-- 顯示讀取中提示 -->
+    <h2 v-if="!products[0] && !minPrice && !maxPrice && !keyword && !categoryId">Loading...</h2>
+    <!-- 循環顯示商品卡片 -->
+    <div v-for="product in products" :key="product.id" class="card" :style="{ opacity: product.quantity <= 0 ? 0.5 : 1 }">
+      <img :src="product.image" alt="" @click="goProductPage(product.id)">
+      <div class="card-body">
+        <h2>{{ product.name }}</h2>
+        <p>{{ product.Category.name }}</p>
+        <br>
+        <h3>$NT {{ product.price }}</h3>
+        <h2 v-if="product.quantity <= 0" class="sold-out-text">售完</h2>
+        <div class="button-group">
+          <!-- 根據商品狀態顯示不同按鈕 -->
+          <button v-if="!product.isFavorited" class="btn favorite-btn" @click="handleAddFavorite(product.id)">收藏</button>
+          <button v-if="product.isFavorited" class="btn unfavorite-btn"
+            @click="handleDeleteFavorite(product.id)">移除收藏</button>
+          <button v-if="product.quantity > 0" class="btn cart-btn" @click="handleCreateCart(product.id)">加入購物車</button>
+          <button v-if="product.quantity <= 0" class="btn cart-disabled" disabled>加入購物車</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- 分頁控制區塊 -->
+  <div class="pagination">
+    <ul>
+      <!-- 顯示上一頁連結 -->
       <li>
-        <RouterLink :to="{ path: '/', query: { categoryId:''} }" @click="handleChangeCategoryId('')">全部</RouterLink>
+        <RouterLink v-if="products[0]" :to="{ path: '/', query: { page: pagination.prev } }" @click="handlePrevPage">上一頁
+        </RouterLink>
       </li>
-      <li v-for="category in categories" :key="category.id">
-        <RouterLink :class="{active: isActive(category.id) }" :to="{ path: '/', query: { categoryId:category.id } }" @click="handleChangeCategoryId(category.id)">{{ category.name }}</RouterLink>
+      <!-- 循環顯示分頁數字連結 -->
+      <li v-for="page in pagination.pages">
+        <RouterLink :class="{ active: isCurrnetPage(page) }" :to="{ path: '/', query: { page: page } }"
+          @click="handleChangePage(page)">{{ page }}</RouterLink>
+      </li>
+      <!-- 顯示下一頁連結 -->
+      <li>
+        <RouterLink v-if="products[0]" :to="{ path: '/', query: { page: pagination.next } }" @click="handleNextPage">下一頁
+        </RouterLink>
       </li>
     </ul>
+  </div>
+  <!-- 錯誤訊息 Modal -->
+  <div class="error-modal-container" v-if="showErrorModal">
+    <div class="error-modal">
+      <h2>警示</h2>
+      <p>請先登入!</p>
+      <button @click="closeErrorModal">關閉</button>
     </div>
   </div>
-<div class="card-wrapper">
-    <h2 v-if="!products[0] && minPrice || !products[0] && maxPrice || !products[0] && keyword || !products[0] && categoryId">沒有商品符合您的搜尋結果</h2>
-    <h2 v-if="!products[0] && !minPrice && !maxPrice && !keyword && !categoryId">Loading...</h2>
-    <div v-for="product in products" :key="product.id" class="card" :style="{ opacity: product.quantity <= 0 ? 0.5 : 1 }">
-     <img  :src="product.image" alt="" @click="goProductPage(product.id)">
-    <div class="card-body">
-      <h2>{{ product.name }}</h2>
-      <p>{{ product.Category.name }}</p>
-      <br>
-      <h3>$NT {{ product.price }}</h3>
-      <h2 v-if="product.quantity <= 0" class="sold-out-text">售完</h2>
-      <div class="button-group">
-        <button v-if="!product.isFavorited" class="btn favorite-btn" @click="handleAddFavorite(product.id)">收藏</button>
-        <button v-if="product.isFavorited" class="btn unfavorite-btn" @click="handleDeleteFavorite(product.id)">移除收藏</button>
-        <button v-if="product.quantity>0" class="btn cart-btn" @click="handleCreateCart(product.id)">加入購物車</button>
-        <button v-if="product.quantity <= 0" class="btn cart-disabled" disabled>加入購物車</button>
-      </div>
-    </div>
+  <div class="error-modal-container" v-if="postCartMsg">
+    <div class="error-modal">
+      <h2>提醒</h2>
+      <p>{{ postCartMsg }}</p>
+      <button @click="closeCartErrorModal">關閉</button>
   </div>
 </div>
-<div class="pagination">
-  <ul>
-    <li>
-      <RouterLink v-if="products[0]" :to="{ path: '/', query: { page:pagination.prev } }" @click="handlePrevPage">上一頁</RouterLink>
-    </li>
-    <li v-for="page in pagination.pages" >
-      <RouterLink :class="{active: isCurrnetPage(page)}" :to="{ path: '/', query: { page: page } }" @click="handleChangePage(page)">{{ page }}</RouterLink>
-    </li>
-    <li>
-      <RouterLink v-if="products[0]" :to="{ path: '/', query: { page: pagination.next } }" @click="handleNextPage">下一頁</RouterLink>
-    </li>
-  </ul>
-</div>
-
-  <!--Modal-->
-      <div class="error-modal-container" v-if="showErrorModal">
-        <div class="error-modal">
-          <h2>警示</h2>
-          <p>請先登入!</p>
-          <button @click="closeErrorModal">關閉</button>
-        </div>
-      </div>
-
-      <div class="error-modal-container" v-if="postCartMsg">
-          <div class="error-modal">
-            <h2>提醒</h2>
-            <p>{{ postCartMsg }}</p>
-            <button @click="closeCartErrorModal">關閉</button>
-          </div>
-        </div>
 </template>
+
 
 <style lang="scss" scoped>
   .classify-container{
