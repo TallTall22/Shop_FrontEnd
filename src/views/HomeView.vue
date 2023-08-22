@@ -17,7 +17,7 @@ const { postCartMsg, postCartErrorMsg, postCart } = postCartAsync();
 const router = useRouter();
 const categoryId = ref('');
 const keyword = ref('');
-const order = ref('');
+const order = ref('id');
 const minPrice = ref('');
 const maxPrice = ref('');
 const page = ref(1);
@@ -126,41 +126,44 @@ getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword
 </script>
 
 <template>
-  <!-- 商品分類和搜尋區塊 -->
-  <div class="classify-container">
+  <div class="home-container">
+    <div class="category">
+      <h2>商品分類</h2>
+        <ul>
+          <!-- 全部商品分類 -->
+          <li>
+            <RouterLink :to="{ path: '/', query: { categoryId: '' } }" @click="handleChangeCategoryId('')">全部</RouterLink>
+          </li>
+          <!-- 循環顯示各分類的連結 -->
+          <li v-for="category in categories" :key="category.id">
+            <RouterLink :class="{ active: isActive(category.id) }" :to="{ path: '/', query: { categoryId: category.id } }"
+              @click="handleChangeCategoryId(category.id)">{{ category.name }}</RouterLink>
+          </li>
+        </ul>
+      </div>
+  <!-- 搜尋區塊 -->
+  <div class="main-content">
+<div class="classify-container">
+  
     <div class="search-container">
       <div class="sort-wrapper">
-        <label for="sort">排序</label>
         <select v-model="order" name="sort" id="" @change="handleSort">
-          <option value="id">商品編號</option>
-          <option value="price">價格</option>
-          <option value="categoryId">種類</option>
+          <option value="id">依商品編號排序</option>
+          <option value="price">價格由低至高</option>
+          <option value="categoryId">依種類排序</option>
         </select>
       </div>
       <div class="search">
-        <input v-model="keyword" type="text" name="keyword">
-        <n-button type="info" @click="handleSearchName">搜尋</n-button>
-      </div>
+            <input v-model="keyword" type="text" name="keyword" placeholder="搜尋商品...">
+            <n-button type="info" @click="handleSearchName">搜尋</n-button>
+          </div>
       <div class="money-wrapper">
         <label for="minPrice">金額</label>
-        <input v-model="minPrice" type="number" name="minPrice" step="10" min="0" :max="maxPrice">
+        <input v-model="minPrice" type="number" name="minPrice" step="10" min="0" :max="maxPrice" placeholder="最低價">
         <label for="maxPrice">-</label>
-        <input v-model="maxPrice" type="number" name="maxPrice" step="10" :min="minPrice">
+        <input v-model="maxPrice" type="number" name="maxPrice" step="10" :min="minPrice" placeholder="最高價">
         <n-button type="info" @click="handleSearchMoney">搜尋</n-button>
       </div>
-    </div>
-    <div class="">
-      <ul>
-        <!-- 全部商品分類 -->
-        <li>
-          <RouterLink :to="{ path: '/', query: { categoryId: '' } }" @click="handleChangeCategoryId('')">全部</RouterLink>
-        </li>
-        <!-- 循環顯示各分類的連結 -->
-        <li v-for="category in categories" :key="category.id">
-          <RouterLink :class="{ active: isActive(category.id) }" :to="{ path: '/', query: { categoryId: category.id } }"
-            @click="handleChangeCategoryId(category.id)">{{ category.name }}</RouterLink>
-        </li>
-      </ul>
     </div>
   </div>
   <!-- 商品展示區塊 -->
@@ -209,6 +212,10 @@ getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword
       </li>
     </ul>
   </div>
+  </div>
+  </div>
+  
+  
   <!-- 錯誤訊息 Modal -->
   <div class="error-modal-container" v-if="showErrorModal">
     <div class="error-modal">
@@ -228,12 +235,51 @@ getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword
 
 
 <style lang="scss" scoped>
-  .classify-container{
+.home-container{
+  display: flex;
+  .category{
+    width: 10%;
+    height: inherit;
+    border: 1.5px solid rgba(100, 98, 98, 0.5) ;
+    border-radius: 10px;
+    h2{
+      text-align: center;
+      margin: 1rem;
+    }
+    ul{
+      height: 50vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      li{
+          font-size: 1.2rem;
+          padding: 0.5rem;
+          &:hover{
+            background-color: #1a1a1a;
+            a{
+              color: #fff;
+            }
+          }
+        a{
+          text-decoration: none;
+          color: var(--major);
+          
+        }
+        .active{
+          font-weight: bold;
+          color: #2e2828;
+        }
+      }
+    }
+
+  }
+  .main-content{
+    width: 90%;
+    .classify-container{
     margin-bottom: 2rem;
     .search-container{
       width: 100%;
       display: flex;
-      justify-content: space-around;
       align-items: center;
       margin-bottom: 2rem;
       .search{
@@ -245,10 +291,8 @@ getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword
         }
       }
       .sort-wrapper{
-        width: 10%;
-        label{
-          font-size: 1rem;
-        }
+        width: 15%;
+        margin-left: 1.5rem;
         select{
             height: 1.5rem;
             margin-right: 5px;
@@ -268,24 +312,7 @@ getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword
         }
       }
     }
-    ul{
-      display: flex;
-      justify-content: space-around;
-      li{
-        a{
-          text-decoration: none;
-          color: var(--major);
-          &:hover{
-            font-weight: bold;
-            color: #2e2828;
-          }
-        }
-        .active{
-          font-weight: bold;
-          color: #2e2828;
-        }
-      }
-    }
+    
   }
 
   .card-wrapper{
@@ -300,8 +327,8 @@ getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword
       overflow: hidden;
       margin-bottom: 2rem;
       img{
-        width: 360px;
-        height: 270px;
+        width: 320px;
+        height: 240px;
         cursor: pointer;
       }
       .card-body{
@@ -398,6 +425,9 @@ getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword
     }
   }
 }
+  }
+}
+  
 
 .error-modal-container {
   display: flex;
