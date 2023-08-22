@@ -28,7 +28,7 @@ const handleLogin = async (e) => {
       account.value = '';
       password.value = '';
       // 轉跳至首頁
-      router.push('/');
+      window.location.href='/'
     }
   } catch {
     // 若登入失敗，顯示錯誤彈窗
