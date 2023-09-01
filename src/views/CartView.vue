@@ -264,7 +264,7 @@ getCart({ authToken })
       </form>
     </div>
 
-    <!-- 進度條下方按鈕 -->
+    <!-- 下方按鈕 -->
     <div class="progress-button">
 
       <!-- 商品確認階段按鈕 -->
