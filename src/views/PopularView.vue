@@ -34,7 +34,7 @@ getWomanPopularProduct();
 <template>
   <n-card>
     <h2>銷售排行榜</h2>
-    <n-tabs type="segment" animated size="large">
+    <n-tabs type="segment" animated size="small">
       <!-- 全部商品選項 -->
       <n-tab-pane name="all" tab="全部商品">
         <n-table striped>
@@ -64,7 +64,7 @@ getWomanPopularProduct();
         </n-table>
       </n-tab-pane>
       <!-- 男性客戶購買選項 -->
-      <n-tab-pane name="man" tab="男性客戶購買">
+      <n-tab-pane name="man" tab="男客戶購買">
         <n-table striped>
           <thead>
             <tr>
@@ -92,7 +92,7 @@ getWomanPopularProduct();
         </n-table>
       </n-tab-pane>
       <!-- 女性客戶購買選項 -->
-      <n-tab-pane name="woman" tab="女性客戶購買">
+      <n-tab-pane name="woman" tab="女客戶購買">
         <n-table striped>
           <thead>
             <tr>

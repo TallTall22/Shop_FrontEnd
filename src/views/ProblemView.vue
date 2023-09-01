@@ -150,7 +150,6 @@ h2{
         input{
         width: 80%;
         padding: 10px;
-        margin-top: 10px;
         border: 1px solid #ddd;
         border-radius: 10px;
     }
@@ -168,6 +167,24 @@ h2{
     background-color: #0056b3;
     }
     }
+    }
+}
+
+@media screen and (max-width: 864px) {
+    .chat-container{
+        .send-wrapper{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            input{
+                width:auto;
+
+            }
+            .send-button{
+                width:auto;
+                margin-left: 0.5rem;
+            }
+        }
     }
 }
 

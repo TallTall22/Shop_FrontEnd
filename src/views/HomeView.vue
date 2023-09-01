@@ -30,14 +30,8 @@ const goProductPage = (id) => {
 };
 
 // 搜尋相關功能
-const handleSearchName = async () => {
-  router.push({ path: '/', query: { keyword: keyword.value } });
-  page.value = 1;
-  await getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword: keyword.value, order: order.value, minPrice: minPrice.value, maxPrice: maxPrice.value });
-};
-
-const handleSearchMoney = async () => {
-  router.push({ path: '/', query: { minPrice: minPrice.value, maxPrice: maxPrice.value } });
+const handleSearch = async () => {
+  router.push({ path: '/', query: { keyword: keyword.value,minPrice: minPrice.value, maxPrice: maxPrice.value } });
   page.value = 1;
   await getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword: keyword.value, order: order.value, minPrice: minPrice.value, maxPrice: maxPrice.value });
 };
@@ -146,23 +140,22 @@ getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword
 <div class="classify-container">
   
     <div class="search-container">
-      <div class="sort-wrapper">
-        <select v-model="order" name="sort" id="" @change="handleSort">
-          <option value="id">依商品編號排序</option>
-          <option value="price">價格由低至高</option>
-          <option value="categoryId">依種類排序</option>
-        </select>
-      </div>
       <div class="search">
             <input v-model="keyword" type="text" name="keyword" placeholder="搜尋商品...">
-            <n-button type="info" @click="handleSearchName">搜尋</n-button>
           </div>
+          <div class="sort-wrapper">
+          <select v-model="order" name="sort" id="" @change="handleSort">
+            <option value="id">依商品編號排序</option>
+            <option value="price">價格由低至高</option>
+            <option value="categoryId">依種類排序</option>
+          </select>
+        </div>
       <div class="money-wrapper">
-        <label for="minPrice">金額</label>
+        <label class="min-price-label" for="minPrice">金額</label>
         <input v-model="minPrice" type="number" name="minPrice" step="10" min="0" :max="maxPrice" placeholder="最低價">
         <label for="maxPrice">-</label>
         <input v-model="maxPrice" type="number" name="maxPrice" step="10" :min="minPrice" placeholder="最高價">
-        <n-button type="info" @click="handleSearchMoney">搜尋</n-button>
+        <n-button type="info" @click="handleSearch">搜尋</n-button>
       </div>
     </div>
   </div>
@@ -237,17 +230,22 @@ getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword
 <style lang="scss" scoped>
 .home-container{
   display: flex;
+  justify-content: space-around;
   .category{
     width: 10%;
     height: inherit;
     border: 1.5px solid rgba(100, 98, 98, 0.5) ;
     border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     h2{
       text-align: center;
       margin: 1rem;
     }
     ul{
-      height: 50vh;
+      height: auto;
+      width: 100%;
       display: flex;
       flex-direction: column;
       justify-content: space-around;
@@ -276,39 +274,40 @@ getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword
   .main-content{
     width: 90%;
     .classify-container{
+    margin-left: 1.5rem;
     margin-bottom: 2rem;
     .search-container{
       width: 100%;
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       margin-bottom: 2rem;
       .search{
-        width: 50%;
+        width: 100%;
+        margin-bottom: 1rem;
         input{
           width: 80%;
           height: 1.5rem;
-          margin-right: 5px;
         }
       }
       .sort-wrapper{
-        width: 15%;
-        margin-left: 1.5rem;
+        width: auto;
+        margin-right: 2rem;
         select{
             height: 1.5rem;
-            margin-right: 5px;
-            margin-left: 5px;
         }
       }
       .money-wrapper{
-        width:35%;
+        width:auto;
+        
         label{
           font-size: 1rem;
+          margin-right: 5px;
         }
         input{
           width: 30%;
           height: 1.5rem;
           margin-right: 5px;
-          margin: 0 5px;
         }
       }
     }
@@ -327,8 +326,8 @@ getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword
       overflow: hidden;
       margin-bottom: 2rem;
       img{
-        width: 320px;
-        height: 240px;
+        max-width: 320px;
+        max-height: 240px;
         cursor: pointer;
       }
       .card-body{
@@ -459,4 +458,41 @@ getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword
 }
 }
 
+@media screen and (max-width: 864px) {
+  .home-container{
+    .category {
+      display: none;
+    ul {
+      li {
+        text-align: center;
+        font-size: 1rem;
+      }
+    }
+  }
+  }
+  .main-content{
+    .classify-container{
+    .search-container{
+      .search{
+        input{
+          width: 90%;
+        }
+      }
+      .sort-wrapper{
+        margin-bottom: 0.5rem;
+        select{
+          height: 1.5rem;
+        }
+      }
+      .money-wrapper{
+        .min-price-label{
+          display: none;
+        }
+      }
+    }
+    
+  }
+}
+  
+}
 </style>
