@@ -38,7 +38,7 @@ const handleLogin = async (e) => {
 
 // 定義處理 Google 登入的函數
 const handleGoogleLogin = () => {
-  window.location.href = 'https://test-shops.com/api/auth/google';
+  window.location.href = 'https://test.test-shops.com/api/auth/google';
 };
 
 // 定義關閉錯誤彈窗的函數
