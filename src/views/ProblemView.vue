@@ -6,7 +6,7 @@ import { io } from 'socket.io-client';
 import { useUserStore } from '../stores/user';
 
 // 建立 Socket.io 連接
-const socket = io("wss://test.just-for-test-shop.de/", { transports: ['websocket'] });
+const socket = io("wss://test-shops.com//", { transports: ['websocket'] });
 
 // 使用 useUserStore 從 store 中獲取使用者資料
 const userStore = useUserStore();

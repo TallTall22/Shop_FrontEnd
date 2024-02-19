@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
-const baseUrl='https://test.just-for-test-shop.de/api'
+const baseUrl='https://test-shops.com/api'
 
 export const useUserStore = defineStore('user', () => {
    const userData=ref('')

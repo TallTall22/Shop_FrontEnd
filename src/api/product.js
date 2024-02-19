@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { reactive, ref } from 'vue'
 
-const baseUrl='https://test.just-for-test-shop.de/api'
+const baseUrl='https://test-shops.com/api'
 
 export const getViewsProducts=()=>{
   const products=ref([])
