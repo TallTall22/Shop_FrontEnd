@@ -42,11 +42,14 @@ if (!authToken) {
 const handlePluseQuantity = async ({ productId, cartId, quantity }) => {
   const res = await patchCart({ authToken, productId, cartId, quantity })
   // 找到要增加數量的商品在購物車中的索引
-  const index = carts.value.findIndex(cart => cart.id === cartId);
+  const index = await carts.value.findIndex(cart => cart.id === cartId);
   // 如果找到了該商品
-  if (index !== -1) {
+  if (index !== -1&&carts.value[index].quantity<carts.value[index].Product.quantity) {
     // 直接更新本地購物車中該商品的數量
-    carts.value[index].quantity += 1;
+     carts.value[index].quantity += 1;
+     amountData.value+=carts.value[index].Product.price
+  }else{
+    showErrorModal.value=true
   }
 }
 
@@ -54,11 +57,14 @@ const handlePluseQuantity = async ({ productId, cartId, quantity }) => {
 const handleMinusQuantity = async ({ productId, cartId, quantity }) => {
   const res = await patchCart({ authToken, productId, cartId, quantity })
   // 找到要增加數量的商品在購物車中的索引
-  const index = carts.value.findIndex(cart => cart.id === cartId);
+  const index =await carts.value.findIndex(cart => cart.id === cartId);
   // 如果找到了該商品
-  if (index !== -1) {
+  if (index !== -1&&carts.value[index].quantity>1) {
     // 直接更新本地購物車中該商品的數量
     carts.value[index].quantity -= 1;
+    amountData.value-=carts.value[index].Product.price
+  }else{
+    showErrorModal.value=true
   }
 }
 
@@ -310,7 +316,8 @@ getCart({ authToken })
   <div class="error-modal-container" v-if="showErrorModal">
     <div class="error-modal">
       <h2>警示</h2>
-      <p v-if="!paidMethod">請選擇付款方式</p>
+      <p v-if="patchCartMsg">{{ patchCartMsg }}</p>
+      <p v-if="!paidMethod&&step===2">請選擇付款方式</p>
       <p v-if="paidMethod">所有資料都必須填寫喔！</p>
       <button @click="closeErrorModal">關閉</button>
     </div>
