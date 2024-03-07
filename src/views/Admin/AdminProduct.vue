@@ -22,7 +22,7 @@ getProduct({ id, authToken })
     </div>
     <div class="info">
       <h2>{{ product.name }}</h2>
-      <h4>{{ product.Category.name }}</h4>
+      <h4 v-if="product.Category">{{ product.Category.name }}</h4>
       <ul>
         <li>價錢 : {{ product.price }}</li>
         <li>庫存 : {{ product.quantity }}</li>

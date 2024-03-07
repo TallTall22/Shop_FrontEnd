@@ -41,11 +41,25 @@ if (!authToken) {
 // 處理增加商品數量
 const handlePluseQuantity = async ({ productId, cartId, quantity }) => {
   const res = await patchCart({ authToken, productId, cartId, quantity })
+  // 找到要增加數量的商品在購物車中的索引
+  const index = carts.value.findIndex(cart => cart.id === cartId);
+  // 如果找到了該商品
+  if (index !== -1) {
+    // 直接更新本地購物車中該商品的數量
+    carts.value[index].quantity += 1;
+  }
 }
 
 // 處理減少商品數量
 const handleMinusQuantity = async ({ productId, cartId, quantity }) => {
   const res = await patchCart({ authToken, productId, cartId, quantity })
+  // 找到要增加數量的商品在購物車中的索引
+  const index = carts.value.findIndex(cart => cart.id === cartId);
+  // 如果找到了該商品
+  if (index !== -1) {
+    // 直接更新本地購物車中該商品的數量
+    carts.value[index].quantity -= 1;
+  }
 }
 
 // 刪除購物車商品
@@ -159,9 +173,11 @@ getCart({ authToken })
                 <td>{{ cart.Product.price }}</td>
                 <td>
                   <button
+                  type="button"
                     @click="handleMinusQuantity({ productId: cart.Product.id, cartId: cart.id, quantity: cart.quantity - 1 })">-</button>
                   {{ cart.quantity }}
                   <button
+                    type="button"
                     @click="handlePluseQuantity({ productId: cart.Product.id, cartId: cart.id, quantity: cart.quantity + 1 })">+</button>
                 </td>
                 <td>{{ cart.Product.price * cart.quantity }}</td>
