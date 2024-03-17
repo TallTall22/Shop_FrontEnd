@@ -6,6 +6,8 @@ import { addFavoriteAsync, deleteFavoriteAsync } from '../api/user';
 import { postCartAsync } from '../api/cart';
 import { RouterLink, useRouter } from 'vue-router';
 import { NButton } from 'naive-ui';
+import ProductCard from '../components/ProductCard.vue';
+import BaseModal from '../components/BaseModal.vue';
 
 // 使用解構賦值從 getViewsProducts 函數中獲取相關變數和方法
 const { products, categories, pagination, productsErrorMsg, getProducts } = getViewsProducts();
@@ -81,14 +83,10 @@ const closeErrorModal = () => {
 const handleCreateCart = async (productId) => {
   if (!authToken) return showErrorModal.value = true;
   const res = await postCart({ authToken, productId });
+  if(postCartMsg) return showErrorModal.value = true;
   if (res) {
     getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword: keyword.value, order: order.value, minPrice: minPrice.value, maxPrice: maxPrice.value });
   }
-};
-
-// 關閉購物車錯誤訊息 Modal
-const closeCartErrorModal = () => {
-  postCartMsg.value = '';
 };
 
 // 分頁相關功能
@@ -155,7 +153,7 @@ getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword
         <input v-model="minPrice" type="number" name="minPrice" step="10" min="0" :max="maxPrice" placeholder="最低價">
         <label for="maxPrice">-</label>
         <input v-model="maxPrice" type="number" name="maxPrice" step="10" :min="minPrice" placeholder="最高價">
-        <n-button type="info" @click="handleSearch">搜尋</n-button>
+        <n-button type="info" @click="handleSearch"><i class="fa-solid fa-magnifying-glass"></i></n-button>
       </div>
     </div>
   </div>
@@ -165,24 +163,10 @@ getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword
     <h2 v-if="!products[0] && (minPrice || maxPrice || keyword || categoryId)">沒有商品符合您的搜尋結果</h2>
     <!-- 顯示讀取中提示 -->
     <h2 v-if="!products[0] && !minPrice && !maxPrice && !keyword && !categoryId">Loading...</h2>
+
     <!-- 循環顯示商品卡片 -->
-    <div v-for="product in products" :key="product.id" class="card" :style="{ opacity: product.quantity <= 0 ? 0.5 : 1 }">
-      <img :src="product.image" alt="" @click="goProductPage(product.id)">
-      <div class="card-body">
-        <h2>{{ product.name }}</h2>
-        <p>{{ product.Category.name }}</p>
-        <br>
-        <h3>$NT {{ product.price }}</h3>
-        <h2 v-if="product.quantity <= 0" class="sold-out-text">售完</h2>
-        <div class="button-group">
-          <!-- 根據商品狀態顯示不同按鈕 -->
-          <button v-if="!product.isFavorited" class="btn favorite-btn" @click="handleAddFavorite(product.id)">收藏</button>
-          <button v-if="product.isFavorited" class="btn unfavorite-btn"
-            @click="handleDeleteFavorite(product.id)">移除收藏</button>
-          <button v-if="product.quantity > 0" class="btn cart-btn" @click="handleCreateCart(product.id)">加入購物車</button>
-          <button v-if="product.quantity <= 0" class="btn cart-disabled" disabled>加入購物車</button>
-        </div>
-      </div>
+    <div v-for="product in products" :key="product.id">
+      <ProductCard :product="product" @go-product-page="goProductPage" @handle-add-favorite="handleAddFavorite(product.id)" @handle-delete-favorite="handleDeleteFavorite(product.id)" @handle-create-cart="handleCreateCart(product.id)"/>
     </div>
   </div>
   <!-- 分頁控制區塊 -->
@@ -210,20 +194,16 @@ getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword
   
   
   <!-- 錯誤訊息 Modal -->
-  <div class="error-modal-container" v-if="showErrorModal">
-    <div class="error-modal">
+  <BaseModal v-if="showErrorModal" @close-error-modal="closeErrorModal">
+    <div v-if="!postCartMsg" class="">
       <h2>警示</h2>
       <p>請先登入!</p>
-      <button @click="closeErrorModal">關閉</button>
     </div>
-  </div>
-  <div class="error-modal-container" v-if="postCartMsg">
-    <div class="error-modal">
+    <div v-if="postCartMsg" class="">
       <h2>提醒</h2>
       <p>{{ postCartMsg }}</p>
-      <button @click="closeCartErrorModal">關閉</button>
-  </div>
-</div>
+    </div>
+  </BaseModal>
 </template>
 
 
@@ -319,76 +299,6 @@ getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword
     flex-wrap: wrap;
     justify-content: space-around;
     margin-bottom: 1rem;
-    .card{
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-      margin-bottom: 2rem;
-      img{
-        max-width: 320px;
-        max-height: 240px;
-        cursor: pointer;
-      }
-      .card-body{
-        padding: 2rem;
-        h2{
-          margin-bottom: 0.2rem;
-        }
-        h3{
-          height: 2rem;
-        }
-        .sold-out-text{
-          text-align: end;
-          color: #ac0303;
-        }
-        .button-group{
-          margin-top: 2rem;
-          display: flex;
-          justify-content: space-around;
-          .btn {
-              display: inline-block;
-              padding: 10px 20px;
-              font-size: 16px;
-              color: #fff;
-              border: none;
-              border-radius: 4px;
-             } 
-            .cart-btn{
-              background-color: #007bff;
-              cursor: pointer;
-              &:hover {
-            background-color: #0056b3;
-          }
-
-          &:active {
-            background-color: #003d80;
-          }
-        }
-        .cart-disabled{
-          background-color: #5cabff;
-        }
-        .favorite-btn{
-          background-color: #397e3c;
-          &:hover {
-            background-color: #2a5f2d;
-            }
-          &:active {
-            background-color: #1f4721;
-            }
-        }
-        .unfavorite-btn{
-          background-color: #ef0101;
-          &:hover {
-            background-color: #ac0303;
-            }
-          &:active {
-            background-color: #890404;
-            }
-        }
-        }
-      }
-    }
   }
 
   .pagination {
@@ -429,26 +339,7 @@ getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword
   
 
 .error-modal-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 999;
 .error-modal {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-  background-color: #fff;
-  max-width: 400px;
-  padding: 4rem;
-  border-radius: 15px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   h2{
     margin-bottom: 1rem;
   }

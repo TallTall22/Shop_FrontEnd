@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { getCartAsync, patchCartAsync, deleteCartAsync, putOrderAsync, postOrderAsync } from '../api/cart'
 import { useRouter } from 'vue-router';
+import BaseModal from '../components/BaseModal.vue';
 
 // 從 API 中取得購物車相關資訊
 const { order, carts, cartMsg, amountData, getCartErrorMsg, getCart } = getCartAsync()
@@ -71,6 +72,7 @@ const handleMinusQuantity = async ({ productId, cartId, quantity }) => {
 // 刪除購物車商品
 const handleDeleteCart = async ({ cartId }) => {
   await deleteCart({ authToken, cartId })
+  getCart({ authToken })
 }
 
 // 進入第二步
@@ -188,7 +190,7 @@ getCart({ authToken })
                 </td>
                 <td>{{ cart.Product.price * cart.quantity }}</td>
                 <td>
-                  <button class="delete" @click="handleDeleteCart({ cartId: cart.id })">刪除</button>
+                  <button type="button" class="delete" @click="handleDeleteCart({ cartId: cart.id })">刪除</button>
                 </td>
               </tr>
             </tbody>
@@ -313,15 +315,12 @@ getCart({ authToken })
   </div>
 
   <!-- 錯誤訊息 Modal -->
-  <div class="error-modal-container" v-if="showErrorModal">
-    <div class="error-modal">
-      <h2>警示</h2>
-      <p v-if="patchCartMsg">{{ patchCartMsg }}</p>
-      <p v-if="!paidMethod&&step===2">請選擇付款方式</p>
-      <p v-if="paidMethod">所有資料都必須填寫喔！</p>
-      <button @click="closeErrorModal">關閉</button>
-    </div>
-</div>
+  <BaseModal v-if="showErrorModal" @close-error-modal="closeErrorModal">
+    <h2>警示</h2>
+    <p v-if="patchCartMsg">{{ patchCartMsg }}</p>
+    <p v-if="!paidMethod&&step===2">請選擇付款方式</p>
+    <p v-if="paidMethod">所有資料都必須填寫喔！</p>
+  </BaseModal>
 </template>
 
 <style lang="scss" scoped>
@@ -506,27 +505,11 @@ getCart({ authToken })
   }
 
   .error-modal-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 999;
-.error-modal {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-  background-color: #fff;
-  max-width: 400px;
-  padding: 4rem;
-  border-radius: 15px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  .error-modal {
   h2{
+    margin-bottom: 1rem;
+  };
+  p{
     margin-bottom: 1rem;
   }
 }

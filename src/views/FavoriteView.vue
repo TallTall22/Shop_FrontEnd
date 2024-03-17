@@ -2,6 +2,7 @@
 import { useRouter } from 'vue-router';
 import { deleteFavoriteAsync, getFavoriteAsync } from '../api/user';
 import { postCartAsync } from '../api/cart';
+import BaseModal from '../components/BaseModal.vue'
 
 // 取得收藏商品相關資料
 const { favorites, favoriteMsg, getFavoriteErrorMsg, getFavorite } = getFavoriteAsync();
@@ -64,23 +65,20 @@ getFavorite({ authToken });
         <h3>$NT {{ favorite.price }}</h3>
         <div class="button-group">
           <!-- 移除收藏按鈕 -->
-          <button class="btn unfavorite-btn" @click="handleDeleteFavorite(favorite.id)">移除收藏</button>
+          <i class="fa-solid fa-heart btn unfavorite-btn" @click="handleDeleteFavorite(favorite.id)"></i>
           <!-- 加入購物車按鈕 -->
-          <button v-if="favorite.quantity > 0" class="btn cart-btn" @click="handleCreateCart(favorite.id)">加入購物車</button>
-          <button v-if="favorite.quantity <= 0" class="btn cart-disabled" disabled>加入購物車</button>
+          <i v-if="favorite.quantity > 0" class="fa-solid fa-cart-shopping btn cart-btn" @click="handleCreateCart(favorite.id)"></i>
+          <i v-if="favorite.quantity <= 0" class="fa-solid fa-cart-shopping btn" disabled></i>
         </div>
       </div>
     </div>
   </div>
 
   <!-- 購物車錯誤訊息 Modal -->
-  <div class="error-modal-container" v-if="postCartMsg">
-    <div class="error-modal">
-      <h2>提醒</h2>
-      <p>{{ postCartMsg }}</p>
-      <button @click="closeCartErrorModal">關閉</button>
-    </div>
-  </div>
+  <BaseModal v-if="postCartMsg" @close-error-modal="closeCartErrorModal">
+    <h2>提醒</h2>
+    <p>{{ postCartMsg }}</p>
+  </BaseModal>
 </template>
 <style lang="scss" scoped>
   .card-wrapper{
@@ -88,59 +86,55 @@ getFavorite({ authToken });
     flex-wrap: wrap;
     justify-content: space-around;
     margin-bottom: 1rem;
-    .card{
+      .card{
       border: 1px solid #ccc;
       border-radius: 5px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       overflow: hidden;
       margin-bottom: 2rem;
       img{
-        width: 360px;
-        height: 270px;
+        max-width: 320px;
+        max-height: 240px;
         cursor: pointer;
       }
       .card-body{
-        padding: 2rem;
+        padding: 1.5rem;
         h2{
           margin-bottom: 0.2rem;
         }
         h3{
           height: 2rem;
         }
+        .sold-out-text{
+          text-align: end;
+          color: #ac0303;
+        }
         .button-group{
-          margin-top: 2rem;
           display: flex;
-          justify-content: space-around;
+          justify-content: flex-end;
           .btn {
               display: inline-block;
-              padding: 10px 20px;
-              font-size: 16px;
-              color: #fff;
+              padding: 5px 5px;
+              font-size: 20px;
               border: none;
               border-radius: 4px;
+              cursor: pointer;
              } 
             .cart-btn{
-              background-color: #007bff;
-              cursor: pointer;
               &:hover {
-            background-color: #0056b3;
+                transform: scale(1.2);
+              }
+              &:active {
+                color: #003d80;
+              }
           }
-
-          &:active {
-            background-color: #003d80;
-          }
-        }
-        .cart-disabled{
-          background-color: #5cabff;
-        }
         .unfavorite-btn{
-          background-color: #ef0101;
-          cursor: pointer;
+          color: #ef0101;
           &:hover {
-            background-color: #ac0303;
+            color: #ac0303;
             }
           &:active {
-            background-color: #890404;
+            color: #890404;
             }
         }
         }
@@ -148,28 +142,12 @@ getFavorite({ authToken });
     }
   }
 
-  .error-modal-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 999;
-.error-modal {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-  background-color: #fff;
-  max-width: 400px;
-  padding: 4rem;
-  border-radius: 15px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+.error-modal-container {
+  .error-modal {
   h2{
+    margin-bottom: 1rem;
+  };
+  p{
     margin-bottom: 1rem;
   }
 }
