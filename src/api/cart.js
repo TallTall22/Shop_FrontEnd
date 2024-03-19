@@ -26,8 +26,8 @@ export const postCartAsync=()=>{
 export const getCartAsync=()=>{
   const getCartErrorMsg=ref('')
   const order=ref('')
-  const carts=ref('')
-  const amountData=ref('')
+  const carts=ref({})
+  const amountData=ref(0)
   const cartMsg=ref('')
   const getCart=async(payload)=>{
     try{

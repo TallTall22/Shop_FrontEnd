@@ -83,7 +83,7 @@ const closeErrorModal = () => {
 const handleCreateCart = async (productId) => {
   if (!authToken) return showErrorModal.value = true;
   const res = await postCart({ authToken, productId });
-  if(postCartMsg) return showErrorModal.value = true;
+  if(postCartMsg&&postCartMsg.value!==undefined) return showErrorModal.value = true;
   if (res) {
     getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword: keyword.value, order: order.value, minPrice: minPrice.value, maxPrice: maxPrice.value });
   }
@@ -166,7 +166,13 @@ getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword
 
     <!-- 循環顯示商品卡片 -->
     <div v-for="product in products" :key="product.id">
-      <ProductCard :product="product" @go-product-page="goProductPage" @handle-add-favorite="handleAddFavorite(product.id)" @handle-delete-favorite="handleDeleteFavorite(product.id)" @handle-create-cart="handleCreateCart(product.id)"/>
+      <ProductCard 
+        :product="product" 
+        @go-product-page="goProductPage" 
+        @handle-add-favorite="handleAddFavorite(product.id)" 
+        @handle-delete-favorite="handleDeleteFavorite(product.id)" 
+        @handle-create-cart="handleCreateCart(product.id)"
+      />
     </div>
   </div>
   <!-- 分頁控制區塊 -->
@@ -195,7 +201,7 @@ getProducts({ authToken, categoryId: categoryId.value, page: page.value, keyword
   
   <!-- 錯誤訊息 Modal -->
   <BaseModal v-if="showErrorModal" @close-error-modal="closeErrorModal">
-    <div v-if="!postCartMsg" class="">
+    <div v-if="!postCartMsg&&!authToken" class="">
       <h2>警示</h2>
       <p>請先登入!</p>
     </div>

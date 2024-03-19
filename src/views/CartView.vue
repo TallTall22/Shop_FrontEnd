@@ -3,6 +3,12 @@ import { ref } from 'vue'
 import { getCartAsync, patchCartAsync, deleteCartAsync, putOrderAsync, postOrderAsync } from '../api/cart'
 import { useRouter } from 'vue-router';
 import BaseModal from '../components/BaseModal.vue';
+import ProgressContainer from '../components/cartComponent/ProgressContainer.vue';
+import CartProductListPart from '../components/cartComponent/CartProductListPart.vue';
+import PaidMethodPart from '../components/cartComponent/PaidMethodPart.vue';
+import PaidInfoPart from '../components/cartComponent/PaidInfoPart.vue';
+import progressButton from '../components/cartComponent/progressButton.vue';
+
 
 // 從 API 中取得購物車相關資訊
 const { order, carts, cartMsg, amountData, getCartErrorMsg, getCart } = getCartAsync()
@@ -40,7 +46,8 @@ if (!authToken) {
 }
 
 // 處理增加商品數量
-const handlePluseQuantity = async ({ productId, cartId, quantity }) => {
+const handlePlusQuantity = async (cart) => {
+    const productId=cart.Product.id, cartId= cart.id, quantity= cart.quantity + 1 
   const res = await patchCart({ authToken, productId, cartId, quantity })
   // 找到要增加數量的商品在購物車中的索引
   const index = await carts.value.findIndex(cart => cart.id === cartId);
@@ -55,7 +62,8 @@ const handlePluseQuantity = async ({ productId, cartId, quantity }) => {
 }
 
 // 處理減少商品數量
-const handleMinusQuantity = async ({ productId, cartId, quantity }) => {
+const handleMinusQuantity = async (cart) => {
+  const productId=cart.Product.id, cartId= cart.id, quantity= cart.quantity - 1 
   const res = await patchCart({ authToken, productId, cartId, quantity })
   // 找到要增加數量的商品在購物車中的索引
   const index =await carts.value.findIndex(cart => cart.id === cartId);
@@ -70,7 +78,8 @@ const handleMinusQuantity = async ({ productId, cartId, quantity }) => {
 }
 
 // 刪除購物車商品
-const handleDeleteCart = async ({ cartId }) => {
+const handleDeleteCart = async (cart) => {
+  const cartId=cart.id
   await deleteCart({ authToken, cartId })
   getCart({ authToken })
 }
@@ -126,192 +135,52 @@ getCart({ authToken })
   <div class="cart" v-if="!cartMsg">
 
     <!-- 進度條容器 -->
-    <div class="progress-container">
-
-      <!-- 商品確認階段 -->
-      <span class="progress-group" dataphase="product" :step="step">
-        <span class="progress-circle">
-          <span class="progress-number">1</span>
-        </span>
-        <div class="progress-text">確認商品</div>
-      </span>
-      <span class="progress-bar" dataOrder="1" :step="step"></span>
-
-      <!-- 付款方式選擇階段 -->
-      <span class="progress-group" dataphase="paidMethod" :step="step">
-        <span class="progress-circle">
-          <span class="progress-number">2</span>
-        </span>
-        <span class="progress-text">選擇付款方式</span>
-      </span>
-      <span class="progress-bar" dataOrder="2" :step="step"></span>
-
-      <!-- 填寫付款資訊階段 -->
-      <span class="progress-group" dataphase="paidInfo" :step="step">
-        <span class="progress-circle">
-          <span class="progress-number">3</span>
-        </span>
-        <span class="progress-text">填寫付款資訊</span>
-      </span>
-    </div>
+    <ProgressContainer :step="step"/>
 
     <!-- 表單區域 -->
     <div class="form-container">
       <form>
 
         <!-- 商品清單部分 -->
-        <div class="part" dataphase="product" :step="step">
-          <table>
-            <thead>
-              <tr>
-                <th>商品編號</th>
-                <th>商品名</th>
-                <th>單價</th>
-                <th>數量</th>
-                <th>總價</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="cart in carts" :key="cart.id">
-
-                <!-- 商品資訊 -->
-                <td>{{ cart.Product.id }}</td>
-                <td>{{ cart.Product.name }}</td>
-                <td>{{ cart.Product.price }}</td>
-                <td>
-                  <button
-                  type="button"
-                    @click="handleMinusQuantity({ productId: cart.Product.id, cartId: cart.id, quantity: cart.quantity - 1 })">-</button>
-                  {{ cart.quantity }}
-                  <button
-                    type="button"
-                    @click="handlePluseQuantity({ productId: cart.Product.id, cartId: cart.id, quantity: cart.quantity + 1 })">+</button>
-                </td>
-                <td>{{ cart.Product.price * cart.quantity }}</td>
-                <td>
-                  <button type="button" class="delete" @click="handleDeleteCart({ cartId: cart.id })">刪除</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          <!-- 購物車總金額 -->
-          <div class="cart-total">
-            <h4>總消費金額：$NT {{ amountData }}</h4>
-          </div>
-        </div>
+        <CartProductListPart 
+          :step="step" 
+          :carts="carts" 
+          :amountData="amountData" 
+          @handle-plus-quantity="handlePlusQuantity" 
+          @handle-minus-quantity="handleMinusQuantity" 
+          @handle-delete-cart="handleDeleteCart" 
+        />
 
         <!-- 付款方式選擇部分 -->
-        <div class="part" dataphase="paidMethod" :step="step">
-          <label class="paidMethod">
-            <input v-model="paidMethod" type="radio" name="paidMethod" value="信用卡">
-            使用信用卡付款
-          </label>
-          <label class="paidMethod">
-            <input v-model="paidMethod" type="radio" name="paidMethod" value="貨到付款">
-            貨到付款
-          </label>
-          <label class="paidMethod">
-            <input v-model="paidMethod" type="radio" name="paidMethod" value="LinePay">
-            Line Pay
-          </label>
-        </div>
-
+        <PaidMethodPart :step="step" v-model="paidMethod"/>
+        
         <!-- 填寫付款資訊部分 -->
-        <div class="part" dataphase="paidInfo" :step="step">
-
-          <!-- 信用卡付款資訊 -->
-          <div v-if="paidMethod === '信用卡'" class="credit-Card">
-            <div class="input-group-row">
-              <div class="input-group">
-                <label for="name">姓名</label>
-                <input v-model="name" type="text" name="name" placeholder="張子房">
-              </div>
-              <div class="input-group">
-                <label for="email">電子信箱</label>
-                <input v-model="email" type="email" name="email" placeholder="example@gmail.com">
-              </div>
-            </div>
-            <div class="input-group-row">
-              <div class="input-group">
-                <label for="phone">電話</label>
-                <input v-model="phone" type="text" name="phone" placeholder="0912345678">
-              </div>
-              <div class="input-group">
-                <label for="address">地址</label>
-                <input v-model="address" type="text" name="address" placeholder="XX市XX區XX路XX號">
-              </div>
-            </div>
-            <div class="input-group-row">
-              <div class="input-group cardNumber">
-                <label for="cardNumber">卡號</label>
-                <div class="">
-                  <input v-model="cardNumber1" type="text" name="cardNumber" maxlength="4" placeholder="1234"> -
-                  <input v-model="cardNumber2" type="text" name="cardNumber" maxlength="4" placeholder="1234"> -
-                  <input v-model="cardNumber3" type="text" name="cardNumber" maxlength="4" placeholder="1234">
-                </div>
-              </div>
-            </div>
-            <div class="input-group-row">
-              <div class="input-group">
-                <label for="validDate">到期日</label>
-                <input v-model="validDate" type="text" name="validDate" placeholder="mm/yy">
-              </div>
-              <div class="input-group">
-                <label for="cvc">CVC/CCV</label>
-                <input v-model="cvc" type="text" name="cvc" maxlength="3" placeholder="123">
-              </div>
-            </div>
-          </div>
-
-          <!-- 貨到付款或 Line Pay 資訊 -->
-          <div v-if="paidMethod === '貨到付款' || 'LinePay'" class="cash-on-delivery">
-            <div class="input-group">
-              <label for="name">姓名</label>
-              <input v-model="name" type="text" name="name">
-            </div>
-            <div class="input-group">
-              <label for="email">電子信箱</label>
-              <input v-model="email" type="email" name="email">
-            </div>
-            <div class="input-group">
-              <label for="phone">電話</label>
-              <input v-model="phone" type="text" name="phone">
-            </div>
-            <div class="input-group">
-              <label for="address">地址</label>
-              <input v-model="address" type="text" name="address">
-            </div>
-          </div>
-        </div>
+        <PaidInfoPart 
+          :step="step" 
+          :paidMethod="paidMethod"
+          v-model:name="name"
+          v-model:email="email"
+          v-model:phone="phone"
+          v-model:address="address"
+          v-model:cardNumber1="cardNumber1"
+          v-model:cardNumber2="cardNumber2"
+          v-model:cardNumber3="cardNumber3"
+          v-model:validDate="validDate"
+          v-model:cvc="cvc"
+        />
       </form>
     </div>
 
     <!-- 下方按鈕 -->
-    <div class="progress-button">
-
-      <!-- 商品確認階段按鈕 -->
-      <div class="button-group" dataphase="product" :step="step">
-        <button disabled>上一頁</button>
-        <button class="next" @click="handleForSecondStep">下一頁</button>
-      </div>
-
-      <!-- 付款方式選擇階段按鈕 -->
-      <div class="button-group" dataphase="paidMethod" :step="step">
-        <button @click="handleMinusStep">上一頁</button>
-        <button class="next" @click="handleForThirdStep">下一頁</button>
-      </div>
-      
-      <!-- 填寫付款資訊階段按鈕 -->
-      <div class="button-group" dataphase="paidInfo" :step="step">
-        <button @click="handleMinusStep">上一頁</button>
-        <button v-if="paidMethod !== 'LinePay'" class="next"
-          @click="handleCheckOrder({ orderId: order.id })">完成訂單</button>
-        <button v-if="paidMethod === 'LinePay'" class="Line-pay-button" @click="handleLinePay({ orderId: order.id })">Line
-          Pay</button>
-      </div>
-    </div>
+    <progressButton 
+      :step="step" 
+      :paidMethod="paidMethod" 
+      @handle-for-second-step="handleForSecondStep" 
+      @handle-minus-step="handleMinusStep"
+      @handle-for-third-step="handleForThirdStep" 
+      @handle-check-order="handleCheckOrder({orderId:order.id})" 
+      @handle-line-pay="handleLinePay({orderId: order.id })" 
+    />
   </div>
 
   <!-- 錯誤訊息 Modal -->
@@ -339,42 +208,7 @@ getCart({ authToken })
 
   .cart{
     padding: 2rem;
-    .progress-container{
-      width: 100%;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      .progress-group{
-        display: flex;
-        align-items: center;
-        .progress-circle{
-          position: relative;
-          display: inline-block;
-          margin-right: 8px;
-          width: 24px;
-          height: 24px;
-          border-radius: 50%;
-          border: 1px solid #000;
-          .progress-number{
-            width: inherit;
-            height: inherit;
-            position: absolute;
-            font-size: 12px;
-            font-weight: 700;
-            line-height: 24px;
-            text-align: center;
-          }
-        }
-        .progress-text{
-            line-height: 24px;
-          }
-      }
-      .progress-bar{
-      border: 1.5px solid #000;
-      flex-grow: 1;
-      margin: 0 10px;
-      }
-    }
+
     .form-container{
       form{
         .part{
@@ -382,126 +216,9 @@ getCart({ authToken })
           display: flex;
           flex-direction: column;
           flex-grow: 1;
-          .delete{
-              padding: 10px 20px;
-              font-size: 16px;
-              color: #fff;
-              border: none;
-              border-radius: 4px;
-              cursor: pointer;
-              background-color: #ef0101;
-              &:hover {
-                background-color: #ac0303;
-                }
-              &:active {
-                background-color: #890404;
-              }
-            }
-          table,th,td{
-            border: 1px solid #000;
-            text-align:center;
-            padding: 1rem;
-            flex-wrap: nowrap;
-          }
-          .cart-total{
-            margin-top: 1rem;
-            text-align: end;
-            font-size: 1.5rem;
-            color: var(--major)
-          }
-          .paidMethod{
-            border: 1px solid #000;
-            padding: 2rem 0;
-            background-color: #fff;
-            margin-bottom: 1rem;
-          }
-          .credit-Card{
-              display: flex;
-              flex-direction: column;
-              flex-wrap: wrap;
-              justify-content: space-around;
-              align-items: center;
-              .input-group-row{
-                display: flex;
-                justify-content: space-around;
-                width: 100%;
-                .input-group {
-                  width: 40%;
-                margin-bottom: 2rem;
-                display: flex;
-                flex-direction: column;
-                font-size: 1.5rem;
-
-                input {
-                  margin-top: 10px;
-                  height: 1.8rem;
-                  font-size: 1rem;
-                  }
-                }
-                .cardNumber{
-                  padding-left: 5%;
-                  width: 100%;
-                }
-              }
-              }
-              .cash-on-delivery{
-                display: flex;
-                flex-direction: row;
-                flex-wrap: wrap;
-                justify-content: space-around;
-                align-items: center;
-
-                .input-group {
-                  width: 40%;
-                  margin-bottom: 2rem;
-                  display: flex;
-                  flex-direction: column;
-                  font-size: 1.5rem;
-
-                input {
-                  margin-top: 10px;
-                  height: 1.8rem;
-                  font-size: 1rem;
-                }
-              }
-            }
             }
           }
         }
-    .progress-button{
-      .button-group{
-        display: flex;
-        justify-content: space-around;
-        button{
-          padding: 10px 20px;
-          border-radius: 5px;
-        }
-        .next{
-            border:  none;
-              color: #fff;
-              background-color: #007bff;
-              &:hover {
-            background-color: #0056b3;
-          }
-
-          &:active {
-            background-color: #003d80;
-          }
-      }
-      .Line-pay-button{
-        border:  none;
-              color: #fff;
-              background-color: #10c000;
-              &:hover {
-            background-color: #119400;
-          }
-
-          &:active {
-            background-color: #005c05;
-          }
-      }
-      }
-    }
   }
 
   .error-modal-container {
@@ -516,42 +233,7 @@ getCart({ authToken })
 }
 
   .cart{
-    .progress-container{
-      
-      //step=1
-      span[step="1"]{
-        &[dataphase="product"]{
-          @extend %done-phase;
-        }
-      }
-
-      //step=2
-      span[step="2"]{
-        &[dataphase="product"],
-        &[dataphase="paidMethod"]{
-          @extend %done-phase;
-        }
-        &[dataOrder="1"]{
-          @extend %done-bar;
-        }
-      }
-
-      //step=3
-      span[step="3"]{
-        &[dataphase="product"],
-        &[dataphase="paidMethod"],
-        &[dataphase="paidInfo"]{
-          @extend %done-phase;
-        }
-        &[dataOrder="1"],
-        &[dataOrder="2"]{
-          @extend %done-bar;
-        }
-      }
-    }
-
-    .form-container,
-    .progress-button{
+    .form-container{
 
       //step=1
        div[step="1"]{
