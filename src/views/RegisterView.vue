@@ -58,7 +58,40 @@ const closeErrorModal = () => {
           <label for="name">名字</label>
           <input v-model="name" name="name" type="text">
         </div>
-        <!-- 其他表單元素... -->
+        <div class="input-group">
+          <label for="gender">性別</label>
+          <select v-model="gender" name="gender" id="">
+            <option value="" disabled>請選擇</option>
+            <option value="男">男</option>
+            <option value="女">女</option>
+            <option value="其他">其他</option>
+            <option value="不願透漏">不願透漏</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label for="email">電子信箱 (必填)</label>
+          <input v-model="email" name="email" type="text" required>
+        </div>
+        <div class="input-group">
+          <label for="account">帳號 (必填)</label>
+          <input v-model="account" name="account" type="text" required>
+        </div>
+        <div class="input-group">
+          <label for="phone">電話/手機</label>
+          <input v-model="phone" name="phone" type="text">
+        </div>
+        <div class="input-group">
+          <label for="address">地址</label>
+          <input v-model="address" name="address" type="text">
+        </div>
+        <div class="input-group">
+          <label for="password">密碼 (必填)</label>
+          <input v-model="password" name="password" type="password" required>
+        </div>
+        <div class="input-group">
+          <label for="confirmPassword">確認密碼 (必填)</label>
+          <input v-model="confirmPassword" name="confirmPassword" type="password" required>
+        </div>
       </div>
       <div class="button-group">
         <button type="submit">註冊</button>
